@@ -1,45 +1,61 @@
-<style>
-    body {
-        font-family: Helvetica, sans-serif;
-        margin: 40px;
-        font-size: 14pt;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    h1 {
-        font-size: 20pt;
-        margin-bottom: 0;
-    }
+<head>
+    <meta charset="UTF-8" />
+    <title>
+        <%= title %>
+    </title>
+    <style>
+        body {
+            font-family: Helvetica, sans-serif;
+            margin: 50px;
+            font-size: 14pt;
+        }
 
-    p {
-        margin-top: 0;
-        margin-bottom: 30px;
-    }
+        h1 {
+            font-size: 20pt;
+            margin-bottom: 30px;
+        }
 
-    ol.spelling-list {
-        list-style-position: outside;
-        padding-left: 20px;
-    }
+        p {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
 
-    .spelling-line {
-        display: inline-block;
-        width: 80%;
-        border-bottom: 1px solid #000;
-        height: 1.2em;
-        margin-left: 10px;
-    }
-</style>
+        ol.spelling-list {
+            list-style-position: outside;
+            padding-left: 1.4em;
+            margin: 0;
+        }
 
-<h1>
-    <%= title %>
-</h1>
-<p>
-    <%= directions %>
-</p>
+        li {
+            margin-bottom: 2em;
+        }
 
-<ol class="spelling-list">
-    <% wordBank.forEach((_, index)=> { %>
-        <li>
-            <span class="spelling-line">_____________________________________________</span>
-        </li>
-        <% }) %>
-</ol>
+        .long-line {
+            border-bottom: 1px solid #000;
+            height: 1.2em;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        <%= title %>
+    </h1>
+    <p>
+        <%= directions %>
+    </p>
+
+    <ol class="spelling-list">
+        <% wordBank.forEach(()=> { %>
+            <li>
+                <div class="long-line"></div>
+            </li>
+            <% }) %>
+    </ol>
+</body>
+
+</html>
