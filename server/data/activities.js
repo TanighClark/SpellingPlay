@@ -55,4 +55,12 @@ export const activities = [
     directions:
       'Listen carefully to the audio for each word. When you hear the word, write it on the blank line. After you’ve written all the words, compare with the answer key to see how you did.',
   },
+  {
+    id: 'alphabeticalOrder',
+    title: 'Alphabetical Order',
+    image: '/images/fillblank.png',
+    description: 'Put the words in alphabetical order',
+    directions:
+      'Write the spelling words in alphabetical order on the lines below. Read each word carefully and think about which letter comes first.',
+  },
 ];

@@ -1,1 +1,45 @@
-<%- include('header.ejs') %>
+<style>
+    body {
+        font-family: Helvetica, sans-serif;
+        margin: 40px;
+        font-size: 14pt;
+    }
+
+    h1 {
+        font-size: 20pt;
+        margin-bottom: 0;
+    }
+
+    p {
+        margin-top: 0;
+        margin-bottom: 30px;
+    }
+
+    ol.spelling-list {
+        list-style-position: outside;
+        padding-left: 20px;
+    }
+
+    .spelling-line {
+        display: inline-block;
+        width: 80%;
+        border-bottom: 1px solid #000;
+        height: 1.2em;
+        margin-left: 10px;
+    }
+</style>
+
+<h1>
+    <%= title %>
+</h1>
+<p>
+    <%= directions %>
+</p>
+
+<ol class="spelling-list">
+    <% wordBank.forEach((_, index)=> { %>
+        <li>
+            <span class="spelling-line">_____________________________________________</span>
+        </li>
+        <% }) %>
+</ol>

@@ -1,1 +1,42 @@
 <%- include('header.ejs') %>
+
+    <style>
+        body {
+            font-family: Helvetica, sans-serif;
+            margin: 40px;
+            font-size: 14pt;
+        }
+
+        h1 {
+            font-size: 20pt;
+            margin-bottom: 0;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .sentence-block {
+            margin-bottom: 40px;
+            page-break-inside: avoid;
+        }
+
+        .full-line {
+            border-bottom: 1px solid #000;
+            width: 100%;
+            height: 1.5em;
+            margin-top: 8px;
+        }
+    </style>
+
+    <% wordBank.forEach((word, i)=> { %>
+        <div class="sentence-block">
+            <strong>
+                <%= i + 1 %>. <%= word %>
+            </strong>
+            <div class="full-line"></div>
+            <div class="full-line"></div>
+            <div class="full-line"></div>
+        </div>
+        <% }) %>
