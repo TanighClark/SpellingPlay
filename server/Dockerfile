@@ -1,21 +1,18 @@
-# Use Node.js base image
 FROM node:18
 
-# Create app directory
 WORKDIR /app
 
-# Skip Chromium download for Puppeteer if you already bundle it or don’t need it in deploy
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+# Prevent puppeteer from downloading Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Install dependencies
+# Copy and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy app source code (after installing deps for cache efficiency)
+# Copy all app files
 COPY . .
 
-# Expose app port
 EXPOSE 8080
 
-# Start the app
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
