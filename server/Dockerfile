@@ -2,15 +2,16 @@ FROM node:18
 
 WORKDIR /app
 
+# Install Chromium manually
+RUN apt-get update && apt-get install -y chromium
+
 # Prevent puppeteer from downloading Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Copy and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy all app files
 COPY . .
 
 EXPOSE 8080
