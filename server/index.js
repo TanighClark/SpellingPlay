@@ -15,6 +15,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const PORT = process.env.PORT || 4000;
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // -------- Helpers --------
@@ -144,13 +146,11 @@ app.post('/api/generate-pdf', async (req, res) => {
     if (!config) throw new Error(`Unknown activity: ${activity}`);
     const { title, directions } = config;
 
-    // Use strategy object for clean activity logic
     const itemStrategies = {
       fillblank: () => generateSentences(words),
       scrambledWords: () =>
         words.map((word) => ({ sentence: scrambleWord(word), answer: word })),
       default: () => words.map((word) => ({ sentence: word, answer: word })),
-
       fillingInLetters: () =>
         words.map((word) => ({
           sentence: hideLetters(word, Math.min(3, Math.floor(word.length / 2))),
@@ -171,14 +171,19 @@ app.post('/api/generate-pdf', async (req, res) => {
       grid,
     });
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
+
     const pdfBuffer = await page.pdf({
       format: 'Letter',
       printBackground: true,
       margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
     });
+
     await browser.close();
 
     res
@@ -196,5 +201,8 @@ app.post('/api/generate-pdf', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 4000;
+app.get('/', (req, res) => {
+  res.send('Spelling Play Server is running.');
+});
+
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
