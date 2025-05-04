@@ -20,17 +20,20 @@ export default function Preview() {
   useEffect(() => {
     async function fetchPdf() {
       try {
-        const resp = await fetch('http://localhost:4000/api/generate-pdf', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            words,
-            listName,
-            activity,
-            title,
-            directions,
-          }),
-        });
+        const resp = await fetch(
+          'https://spelling-app.fly.dev/api/generate-pdf',
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              words,
+              listName,
+              activity,
+              title,
+              directions,
+            }),
+          }
+        );
         if (!resp.ok) throw new Error(resp.statusText);
         const blob = await resp.blob();
         const url = URL.createObjectURL(blob);
