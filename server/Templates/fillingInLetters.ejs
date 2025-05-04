@@ -1,0 +1,39 @@
+<%- include('header.ejs') %>
+
+    <style>
+        .fill-letter-grid {
+            margin-top: 2em;
+        }
+
+        .fill-row {
+            font-size: 16pt;
+            margin-bottom: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+
+        .missing-word {
+            font-family: monospace;
+            font-size: 18pt;
+            letter-spacing: 0.2em;
+        }
+
+        .answer-line {
+            border-bottom: 1px solid #000;
+            width: 150px;
+            display: inline-block;
+            margin-left: 1em;
+        }
+    </style>
+
+    <div class="fill-letter-grid">
+        <% items.forEach((item, idx)=> { %>
+            <div class="fill-row">
+                <span class="missing-word">
+                    <%= item.sentence %>
+                </span>
+                <span class="answer-line"></span>
+            </div>
+            <% }) %>
+    </div>

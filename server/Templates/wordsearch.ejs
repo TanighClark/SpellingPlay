@@ -1,0 +1,29 @@
+<%- include('header.ejs') %>
+
+    <style>
+        table.wordsearch {
+            border-collapse: collapse;
+            margin: 2em auto;
+        }
+
+        table.wordsearch td {
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            border: 1px solid #000;
+            font-size: 18pt;
+            text-transform: uppercase;
+        }
+    </style>
+
+    <table class="wordsearch">
+        <% grid.forEach(row=> { %>
+            <tr>
+                <% row.forEach(cell=> { %>
+                    <td>
+                        <%= cell %>
+                    </td>
+                    <% }) %>
+            </tr>
+            <% }) %>
+    </table>

@@ -1,0 +1,44 @@
+<%- include('header.ejs') %>
+
+    <style>
+        table.scramble {
+            width: 100%;
+            margin-top: 2em;
+            border-collapse: separate;
+            border-spacing: 0 1em;
+        }
+
+        table.scramble td {
+            font-size: 14pt;
+            padding: 0.5em;
+            vertical-align: top;
+        }
+
+        .scrambled-word {
+            font-weight: bold;
+            letter-spacing: 0.1em;
+        }
+
+        .line {
+            display: inline-block;
+            border-bottom: 1px solid #000;
+            width: 150px;
+            margin-left: 1em;
+        }
+    </style>
+
+    <table class="scramble">
+        <% wordBank.forEach((word, idx)=> {
+            const scrambled = word.split('').sort(() => 0.5 - Math.random()).join('').toUpperCase();
+            %>
+            <tr>
+                <td>
+                    <%= idx + 1 %>.
+                </td>
+                <td class="scrambled-word">
+                    <%= scrambled %>
+                </td>
+                <td><span class="line">&nbsp;</span></td>
+            </tr>
+            <% }) %>
+    </table>

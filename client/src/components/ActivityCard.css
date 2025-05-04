@@ -1,0 +1,38 @@
+.activity-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 260px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: #fff;
+    margin: 0 auto;
+  }
+  
+  .activity-card img {
+    width: 260px;
+    height: 200px;
+    object-fit: contain;
+    flex-shrink: 0;
+    background: #f9fafb;
+  }
+  
+  .card-body { padding: 1rem; text-align: center; }
+  .card-body h2 { margin: 0 0 0.5rem; font-size: 1.25rem; color: #111827; }
+  .card-body p  { margin: 0; color: #4b5563; line-height: 1.4; }
+  
+  .activity-card button {
+    margin: 1rem;
+    padding: 0.75rem;
+    background: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .activity-card button:hover { background: #16a34a; }
+  

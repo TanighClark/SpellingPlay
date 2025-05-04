@@ -1,0 +1,17 @@
+<%- include('header.ejs') %>
+
+    <ol class="questions">
+        <% items.forEach((it)=> {
+            // split on any run of underscores:
+            const parts = it.sentence.split(/_+/);
+            %>
+            <li>
+                <!-- text before the blank -->
+                <%= parts[0] %>
+                    <!-- our styled blank -->
+                    <span class="blank-line"></span>
+                    <!-- text after the blank (rejoin if multiple segments) -->
+                    <%= parts.slice(1).join('') %>
+            </li>
+            <% }) %>
+    </ol>
