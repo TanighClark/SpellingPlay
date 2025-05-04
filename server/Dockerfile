@@ -4,15 +4,18 @@ FROM node:18
 # Create app directory
 WORKDIR /app
 
+# Skip Chromium download for Puppeteer if you already bundle it or don’t need it in deploy
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
 # Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy app source
+# Copy app source code (after installing deps for cache efficiency)
 COPY . .
 
-# Expose the port
+# Expose app port
 EXPOSE 8080
 
 # Start the app
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
