@@ -71,4 +71,18 @@
   .word-entry-button:hover {
     background-color: #0056b3;
   }
+  .word-preview {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .word-preview ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    columns: 2;
+    gap: 2rem;
+  }
   

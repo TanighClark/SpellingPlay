@@ -9,15 +9,24 @@ export default function WordEntry() {
   const [saveList, setSaveList] = useState(false);
   const navigate = useNavigate();
 
+  const wordsPreview = words
+    .split(/[\n,\s]+/)
+    .map((w) => w.trim())
+    .filter(Boolean);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const raw = words
-      .split(/[\n,]+/)
-      .map((w) => w.trim())
-      .filter(Boolean);
-    const uniqueWords = Array.from(new Set(raw));
+    const uniqueWords = Array.from(new Set(wordsPreview));
+    const finalListName =
+      listName.trim() || `List - ${new Date().toLocaleDateString()}`;
+
+    if (uniqueWords.length === 0) {
+      alert('Please enter at least one word.');
+      return;
+    }
+
     navigate('/activities', {
-      state: { words: uniqueWords, listName, saveList },
+      state: { words: uniqueWords, listName: finalListName, saveList },
     });
   };
 
@@ -30,7 +39,7 @@ export default function WordEntry() {
           <textarea
             id="words"
             className="word-entry-textarea"
-            placeholder="One word per line or separated by commas"
+            placeholder="One word per line, or separate with commas or spaces"
             value={words}
             onChange={(e) => setWords(e.target.value)}
           />
@@ -62,6 +71,17 @@ export default function WordEntry() {
           Next
         </button>
       </form>
+
+      {wordsPreview.length > 0 && (
+        <div className="word-preview">
+          <h2>Preview ({wordsPreview.length} words)</h2>
+          <ul>
+            {wordsPreview.map((word, i) => (
+              <li key={i}>{word}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
