@@ -62,23 +62,34 @@ export default function Preview() {
   };
 
   return (
-    <div className="preview-page">
-      <h1 className="preview-title">{title} is Ready!</h1>
+    <section className="preview-page" aria-labelledby="preview-title">
+      <h1 id="preview-title" className="preview-title">
+        {title} is Ready!
+      </h1>
 
       <div className="preview-panel">
-        {/* left: PDF thumbnail */}
-        <div className="pdf-thumbnail">
+        {/* PDF Preview */}
+        <figure className="pdf-thumbnail" aria-label="Worksheet Preview">
           {pdfUrl ? (
             <iframe
               src={`${pdfUrl}#zoom=page-width`}
-              title="Worksheet Preview"
+              title={`Preview of ${title} worksheet`}
+              width="100%"
+              height="500"
+              loading="lazy"
+              aria-describedby="preview-description"
             />
           ) : (
-            <div className="placeholder">Loading preview…</div>
+            <div className="placeholder" role="status" aria-live="polite">
+              Loading preview…
+            </div>
           )}
-        </div>
+          <figcaption id="preview-description" className="sr-only">
+            Preview of the generated worksheet.
+          </figcaption>
+        </figure>
 
-        {/* right: Details list */}
+        {/* Details List */}
         <div className="preview-details">
           <dl>
             <dt>Activity:</dt>
@@ -94,9 +105,13 @@ export default function Preview() {
             <dd>{directions}</dd>
           </dl>
 
-          {/* bottom: side-by-side buttons */}
+          {/* Action Buttons */}
           <div className="preview-actions">
-            <button className="btn btn-primary" onClick={handleDownload}>
+            <button
+              className="btn btn-primary"
+              onClick={handleDownload}
+              aria-label="Download the worksheet PDF"
+            >
               Download PDF
             </button>
             <button
@@ -104,12 +119,13 @@ export default function Preview() {
               onClick={() =>
                 navigate('/activities', { state: { words, listName } })
               }
+              aria-label="Create a new worksheet activity"
             >
               Try Another Activity
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

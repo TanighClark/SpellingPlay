@@ -76,9 +76,12 @@ export default function ActivityPicker() {
   const listName = state?.listName || 'Demo List';
 
   return (
-    <div className="picker-container">
+    <main className="picker-container" aria-label="Activity Selection">
       <h1 className="picker-title">Choose an Activity</h1>
-      <div className="picker-grid">
+      <section
+        className="picker-grid"
+        aria-label="Available spelling activities"
+      >
         {activities.map((act) => (
           <ActivityCard
             key={act.id}
@@ -98,7 +101,7 @@ export default function ActivityPicker() {
             }
           />
         ))}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

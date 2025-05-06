@@ -29,65 +29,119 @@ export default function WordEntry() {
 
   return (
     <div className="landing-container">
-      <section className="hero-section">
+      {/* Hero Section */}
+      <section className="hero-section" aria-labelledby="hero-heading">
         <div className="hero-text">
-          <h1>
-            Make Spelling <br></br>Practice Fun
+          <h1 id="hero-heading">
+            Make Spelling <br /> Practice Fun
           </h1>
           <p>
             Improve your spelling skills with engaging printable activities.
           </p>
-          <a href="#entry-form" className="get-started-btn">
+          <a
+            href="#entry-form"
+            className="get-started-btn"
+            role="button"
+            aria-label="Start entering your spelling words"
+          >
             Get Started
           </a>
         </div>
         <div className="hero-image">
-          <img src="/images/hero-boy.png" alt="Kid practicing spelling" />
+          <img
+            src="/images/hero-boy.png"
+            alt="Smiling child practicing spelling activities"
+            loading="lazy"
+          />
         </div>
       </section>
 
-      <section className="stats-section">
+      {/* Stats Section */}
+      <section className="stats-section" aria-label="User Statistics">
         <h2>10,000+</h2>
         <p>Lists created by users</p>
       </section>
 
-      <section className="how-it-works">
-        <h2>Get Started in 3 Easy Steps</h2>
+      {/* How it Works Section */}
+      <section className="how-it-works" aria-labelledby="how-heading">
+        <h2 id="how-heading">Get Started in 3 Easy Steps</h2>
         <p>
           Spell & Play makes practicing spelling quick and simple. Here’s how:
         </p>
         <div className="steps">
-          <div className="step">
-            <img src="/images/icon-pencil.png" alt="Enter words" />
+          <div className="step" role="group" aria-label="Step 1: Enter Words">
+            <img
+              src="/images/icon-pencil.png"
+              alt="Pencil icon"
+              loading="lazy"
+            />
             <h3>1. Enter Words</h3>
             <p>Type or paste your spelling list into the box.</p>
           </div>
-          <div className="step">
-            <img src="/images/icon-click.png" alt="Choose activity" />
+          <div
+            className="step"
+            role="group"
+            aria-label="Step 2: Choose an Activity"
+          >
+            <img
+              src="/images/icon-click.png"
+              alt="Mouse click icon"
+              loading="lazy"
+            />
             <h3>2. Choose an Activity</h3>
             <p>Select from fun printable worksheets or games.</p>
           </div>
-          <div className="step">
-            <img src="/images/icon-download.png" alt="Download" />
+          <div
+            className="step"
+            role="group"
+            aria-label="Step 3: Download and Play"
+          >
+            <img
+              src="/images/icon-download.png"
+              alt="Download icon"
+              loading="lazy"
+            />
             <h3>3. Download & Play</h3>
             <p>Print or save your activity. Ready to go!</p>
           </div>
         </div>
       </section>
 
-      <section id="entry-form" className="entry-form-section">
-        <h2>Enter your own spelling words</h2>
+      {/* Entry Form Section */}
+      <section
+        id="entry-form"
+        className="entry-form-section"
+        aria-labelledby="entry-heading"
+      >
+        <h2 id="entry-heading">Enter your own spelling words</h2>
         <p>Create a custom practice list, then save it for future use.</p>
 
-        <form onSubmit={handleSubmit} className="word-entry-form">
+        <form
+          onSubmit={handleSubmit}
+          className="word-entry-form"
+          aria-describedby="form-description"
+        >
+          <p id="form-description" className="sr-only">
+            Input your spelling words and optionally name your list
+          </p>
+
+          <label htmlFor="word-list" className="sr-only">
+            Spelling Words
+          </label>
           <textarea
+            id="word-list"
             placeholder="e.g. hare, monkey, cat, chair"
             value={words}
             onChange={(e) => setWords(e.target.value)}
             className="word-entry-textarea"
+            aria-label="Enter spelling words"
           />
 
+          <label htmlFor="list-name" className="sr-only">
+            List Name
+          </label>
           <input
+            id="list-name"
             type="text"
             placeholder="List name (optional)"
             value={listName}
@@ -100,12 +154,13 @@ export default function WordEntry() {
               type="checkbox"
               checked={saveList}
               onChange={() => setSaveList((v) => !v)}
+              aria-checked={saveList}
             />
             Save this list
           </label>
 
           {wordsPreview.length > 0 && (
-            <div className="words-preview">
+            <div className="words-preview" aria-live="polite">
               <h4>Words Preview:</h4>
               <ul>
                 {wordsPreview.map((word, i) => (

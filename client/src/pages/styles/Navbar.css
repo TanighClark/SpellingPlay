@@ -1,3 +1,4 @@
+/* Main navbar container */
 .navbar {
   background-color: #2563eb;
   color: white;
@@ -7,17 +8,32 @@
   padding: 0.75rem 1.5rem;
 }
 
+/* Inner content wrapper */
 .navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
+/* Logo/link */
 .navbar-logo {
   font-size: 1.5rem;
   font-weight: bold;
 }
 
+.navbar-logo a {
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-logo a:hover,
+.navbar-logo a:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+/* Toggle (hamburger) for mobile */
 .navbar-toggle {
   font-size: 1.5rem;
   background: none;
@@ -28,6 +44,7 @@
   margin-left: auto;
 }
 
+/* Link list container */
 .navbar-links {
   display: flex;
   list-style: none;
@@ -36,18 +53,23 @@
   gap: 2rem;
 }
 
+/* Individual link styles */
 .navbar-links li a {
   color: white;
   text-decoration: none;
   font-weight: 600;
   font-size: 1.125rem;
+  transition: text-decoration 0.2s ease;
 }
 
-.navbar-links li a:hover {
-  text-decoration: underline;
+.navbar-links li a:hover,
+.navbar-links li a:focus {
+  text-decoration: none;
+  outline: none;
+  
 }
 
-/* Mobile styles */
+/* Mobile layout */
 @media (max-width: 600px) {
   .navbar-content {
     flex-direction: column;
