@@ -1,6 +1,6 @@
 // client/src/components/ActivityCard.jsx
 import React from 'react';
-import './ActivityCard.css';
+import '../pages/styles/ActivityCard.css'; // Import your CSS file
 
 export default function ActivityCard({ title, image, description, onSelect }) {
   return (
