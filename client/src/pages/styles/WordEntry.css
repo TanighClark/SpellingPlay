@@ -2,7 +2,6 @@
 
 .landing-container {
   font-family: Arial, sans-serif;
-  background-color: #ffffff;
   color: #333;
 }
 
@@ -18,13 +17,24 @@
   flex: 1;
   min-width: 280px;
   margin-right: 2rem;
-  margin-left: 100px;
+  margin-left: 10px; /* default for small screens */
+}
+
+@media (min-width: 768px) {
+  .hero-text {
+    margin-left: 100px; /* only for larger screens */
+  }
 }
 
 .hero-text h1 {
   font-size: 4.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
+}
+@media (max-width: 600px) {
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
 }
 
 .hero-text p {
@@ -120,13 +130,16 @@
 }
 
 .entry-form-section {
-  max-width: 700px;
-  margin: 2rem auto;
-
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
   background-color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  box-sizing: border-box;
+
 }
+
 
 .entry-form-section h2 {
   text-align: center;
@@ -153,6 +166,7 @@
   font-size: 1.2rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .word-entry-checkbox {
@@ -173,6 +187,7 @@
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+  margin-bottom: 1rem;
 }
 
 .word-entry-button:hover {
