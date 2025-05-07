@@ -50,22 +50,39 @@ async function generateSentences(words) {
     {
       role: 'user',
       content: `Words: ${JSON.stringify(words)}
-        Format exactly as valid JSON.
-        Each element should be an object with:
-        - "sentence": the sentence with the word replaced by "_____"
-        - "answer": the original word
-        `,
+      Format strictly as a JSON array.
+      Each element should be an object with:
+      - "sentence": a sentence with the word replaced by "_____"
+      - "answer": the original word
+      Only return the JSON array, nothing else.`,
     },
   ];
 
-  const resp = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages,
-    max_tokens: 500,
-    temperature: 0.7,
-  });
+  try {
+    const resp = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages,
+      max_tokens: 500,
+      temperature: 0.7,
+    });
 
-  return JSON.parse(resp.choices[0].message.content.trim());
+    const content = resp.data.choices[0]?.message?.content.trim();
+    console.log('Raw OpenAI Response:', content);
+
+    let parsedData;
+
+    try {
+      parsedData = JSON.parse(content);
+    } catch (parseError) {
+      console.error('JSON Parsing Error:', parseError.message);
+      throw new Error(`Invalid JSON format in OpenAI response: ${content}`);
+    }
+
+    return parsedData;
+  } catch (err) {
+    console.error('Error in generateSentences:', err.message);
+    throw new Error(`Error generating sentences: ${err.message}`);
+  }
 }
 
 // -------- Route with Streaming PDF --------
