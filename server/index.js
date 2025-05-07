@@ -15,6 +15,7 @@ const app = express();
 const allowedOrigins = [
   'https://spelling-play.vercel.app',
   'https://spelling-app.fly.dev',
+  'http://localhost:5174', // Include localhost during development
 ];
 
 app.use(
