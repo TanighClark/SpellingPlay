@@ -31,7 +31,7 @@ app.use(
     credentials: true,
   })
 );
-
+console.log('API Key:', process.env.OPENAI_API_KEY);
 app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
@@ -70,12 +70,15 @@ async function generateSentences(words) {
 
 // -------- Route with Streaming PDF --------
 app.post('/api/generate-pdf', async (req, res) => {
+  let browser;
+
   try {
-    const { words, listName, activity } = req.body;
+    const { words, listName, activity } = req.body || {};
     const config = activities.find((a) => a.id === activity);
 
     if (!config) {
-      throw new Error(`Unknown activity: ${activity}`);
+      console.error(`Unknown activity: ${activity}`);
+      return res.status(400).json({ error: `Unknown activity: ${activity}` });
     }
 
     const { title, directions } = config;
@@ -103,7 +106,7 @@ app.post('/api/generate-pdf', async (req, res) => {
       items,
     });
 
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
@@ -124,10 +127,6 @@ app.post('/api/generate-pdf', async (req, res) => {
 
     pdfStream.pipe(res);
 
-    pdfStream.on('end', async () => {
-      await browser.close();
-    });
-
     pdfStream.on('error', (err) => {
       console.error('PDF Stream Error:', err);
       res.status(500).end();
@@ -135,11 +134,11 @@ app.post('/api/generate-pdf', async (req, res) => {
   } catch (err) {
     console.error('Error generating PDF:', err);
     res.status(500).json({ error: err.message });
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
-});
-
-app.get('/', (req, res) => {
-  res.send('Spelling Play Server is running.');
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
