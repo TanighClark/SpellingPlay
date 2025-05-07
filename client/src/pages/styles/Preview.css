@@ -24,6 +24,7 @@
   }
   .pdf-thumbnail {
     flex: auto;
+    height: 60vh; /* ✅ Set a solid mobile height */
     max-height: 630px;
     border: 1px solid #ccc;
     overflow: hidden;
