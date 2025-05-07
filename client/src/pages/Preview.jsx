@@ -15,11 +15,12 @@ export default function Preview() {
 
   // store the blob URL for our PDF
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch the PDF once, on mount
   useEffect(() => {
     async function fetchPdf() {
       try {
+        setLoading(true);
         const baseUrl =
           import.meta.env.VITE_API_URL || 'https://spelling-app.fly.dev';
         const resp = await fetch(`${baseUrl}/api/generate-pdf`, {
@@ -33,24 +34,34 @@ export default function Preview() {
             directions,
           }),
         });
-        if (!resp.ok) throw new Error(resp.statusText);
+
+        if (!resp.ok)
+          throw new Error(`PDF generation failed: ${resp.statusText}`);
+
         const blob = await resp.blob();
+
+        // Verify the content type
+        if (blob.type !== 'application/pdf') {
+          console.error('Unexpected content type:', blob.type);
+          throw new Error('Failed to generate a valid PDF.');
+        }
+
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
       } catch (err) {
         console.error('PDF fetch failed:', err);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchPdf();
 
-    // cleanup URL on unmount
     return () => {
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
     };
   }, [words, listName, activity, title, directions]);
 
-  // Handler for download (reuses our blob URL)
   const handleDownload = () => {
     if (!pdfUrl) return;
     const a = document.createElement('a');
@@ -68,11 +79,14 @@ export default function Preview() {
       </h1>
 
       <div className="preview-panel">
-        {/* PDF Preview */}
         <figure className="pdf-thumbnail" aria-label="Worksheet Preview">
-          {pdfUrl ? (
+          {loading ? (
+            <div className="placeholder" role="status" aria-live="polite">
+              Loading preview…
+            </div>
+          ) : pdfUrl ? (
             <iframe
-              src={`${pdfUrl}#zoom=page-width`}
+              src={pdfUrl}
               title={`Preview of ${title} worksheet`}
               width="100%"
               height="500"
@@ -81,15 +95,11 @@ export default function Preview() {
             />
           ) : (
             <div className="placeholder" role="status" aria-live="polite">
-              Loading preview…
+              Failed to load preview.
             </div>
           )}
-          <figcaption id="preview-description" className="sr-only">
-            Preview of the generated worksheet.
-          </figcaption>
         </figure>
 
-        {/* Details List */}
         <div className="preview-details">
           <dl>
             <dt>Activity:</dt>
@@ -105,12 +115,12 @@ export default function Preview() {
             <dd>{directions}</dd>
           </dl>
 
-          {/* Action Buttons */}
           <div className="preview-actions">
             <button
               className="btn btn-primary"
               onClick={handleDownload}
               aria-label="Download the worksheet PDF"
+              disabled={!pdfUrl}
             >
               Download PDF
             </button>

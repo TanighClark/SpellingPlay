@@ -20,6 +20,7 @@ const PORT = process.env.PORT || 8080;
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // -------- Helpers --------
+
 async function generateSentences(words) {
   const messages = [
     {
@@ -29,20 +30,12 @@ async function generateSentences(words) {
     },
     {
       role: 'user',
-      content: `
-Words: ${JSON.stringify(words)}
-
-Format exactly as valid JSON.
-Each element should be an object with:
-- "sentence": the sentence with the word replaced by "_____"
-- "answer": the original word
-
-Example:
-[
-  { "sentence": "The small fluffy_____ dog ran down the street fast.", "answer": "quick" },
-  ...
-]
-`,
+      content: `Words: ${JSON.stringify(words)}
+        Format exactly as valid JSON.
+        Each element should be an object with:
+        - "sentence": the sentence with the word replaced by "_____"
+        - "answer": the original word
+        `,
     },
   ];
 
@@ -56,111 +49,32 @@ Example:
   return JSON.parse(resp.choices[0].message.content.trim());
 }
 
-function scrambleWord(word) {
-  const letters = word.split('');
-  for (let i = letters.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [letters[i], letters[j]] = [letters[j], letters[i]];
-  }
-  return letters.join('');
-}
-
-function generateWordSearchGrid(words, size = 15) {
-  const grid = Array.from({ length: size }, () => Array(size).fill(null));
-  const directions = [
-    [0, 1],
-    [1, 0],
-    [1, 1],
-    [-1, 1],
-  ];
-
-  const placeWord = (word) => {
-    for (let attempts = 0; attempts < 100; attempts++) {
-      const dir = directions[Math.floor(Math.random() * directions.length)];
-      const row = Math.floor(Math.random() * size);
-      const col = Math.floor(Math.random() * size);
-      let r = row,
-        c = col;
-      let fits = true;
-
-      for (let i = 0; i < word.length; i++) {
-        if (
-          r < 0 ||
-          c < 0 ||
-          r >= size ||
-          c >= size ||
-          (grid[r][c] && grid[r][c] !== word[i].toUpperCase())
-        ) {
-          fits = false;
-          break;
-        }
-        r += dir[0];
-        c += dir[1];
-      }
-
-      if (fits) {
-        r = row;
-        c = col;
-        for (let i = 0; i < word.length; i++) {
-          grid[r][c] = word[i].toUpperCase();
-          r += dir[0];
-          c += dir[1];
-        }
-        return true;
-      }
-    }
-    return false;
-  };
-
-  words.forEach(placeWord);
-
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if (!grid[r][c]) {
-        grid[r][c] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-      }
-    }
-  }
-
-  return grid;
-}
-
-function hideLetters(word, numMissing = 2) {
-  const indices = [];
-  while (indices.length < numMissing && indices.length < word.length) {
-    const idx = Math.floor(Math.random() * word.length);
-    if (!indices.includes(idx)) indices.push(idx);
-  }
-
-  return word
-    .split('')
-    .map((ch, i) => (indices.includes(i) ? '_' : ch))
-    .join('');
-}
-
-// -------- Route --------
+// -------- Route with Streaming PDF --------
 app.post('/api/generate-pdf', async (req, res) => {
   try {
     const { words, listName, activity } = req.body;
     const config = activities.find((a) => a.id === activity);
-    if (!config) throw new Error(`Unknown activity: ${activity}`);
+
+    if (!config) {
+      throw new Error(`Unknown activity: ${activity}`);
+    }
+
     const { title, directions } = config;
 
     const itemStrategies = {
       fillblank: () => generateSentences(words),
       scrambledWords: () =>
-        words.map((word) => ({ sentence: scrambleWord(word), answer: word })),
-      default: () => words.map((word) => ({ sentence: word, answer: word })),
-      fillingInLetters: () =>
         words.map((word) => ({
-          sentence: hideLetters(word, Math.min(3, Math.floor(word.length / 2))),
+          sentence: word
+            .split('')
+            .sort(() => Math.random() - 0.5)
+            .join(''),
           answer: word,
         })),
+      default: () => words.map((word) => ({ sentence: word, answer: word })),
     };
 
     const items = await (itemStrategies[activity] || itemStrategies.default)();
-    const grid =
-      activity === 'wordsearch' ? generateWordSearchGrid(words) : null;
     const templatePath = path.join(__dirname, 'templates', `${activity}.ejs`);
 
     const html = await ejs.renderFile(templatePath, {
@@ -168,7 +82,6 @@ app.post('/api/generate-pdf', async (req, res) => {
       directions,
       wordBank: words,
       items,
-      grid,
     });
 
     const browser = await puppeteer.launch({
@@ -178,25 +91,30 @@ app.post('/api/generate-pdf', async (req, res) => {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    const pdfBuffer = await page.pdf({
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${listName || 'worksheet'}_${activity}.pdf"`
+    );
+
+    const pdfStream = await page.createPDFStream({
       format: 'Letter',
       printBackground: true,
-      margin: { top: '50px', bottom: '50px', left: '50px', right: '50px' },
+      margin: { top: '30px', bottom: '30px', left: '30px', right: '30px' },
     });
 
-    await browser.close();
+    pdfStream.pipe(res);
 
-    res
-      .status(200)
-      .set({
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${
-          listName || 'worksheet'
-        }_${activity}.pdf"`,
-      })
-      .send(pdfBuffer);
+    pdfStream.on('end', async () => {
+      await browser.close();
+    });
+
+    pdfStream.on('error', (err) => {
+      console.error('PDF Stream Error:', err);
+      res.status(500).end();
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Error generating PDF:', err);
     res.status(500).json({ error: err.message });
   }
 });
