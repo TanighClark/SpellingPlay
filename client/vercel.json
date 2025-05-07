@@ -5,7 +5,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://spelling-app.fly.dev"
+            "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://spelling-app.fly.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:;"
           }
         ]
       }
