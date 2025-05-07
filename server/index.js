@@ -12,7 +12,25 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-app.use(cors());
+const allowedOrigins = [
+  'https://spelling-play.vercel.app',
+  'https://spelling-app.fly.dev',
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ['GET', 'POST'],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 8080;
