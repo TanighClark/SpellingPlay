@@ -1,13 +1,6 @@
 app = "spelling-app"
 primary_region = "iad"
 
-[build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = [
-    "paketo-buildpacks/node-engine",
-    "paketo-buildpacks/chrome"
-  ]
-
 [http_service]
   internal_port = 8080
   force_https = true
