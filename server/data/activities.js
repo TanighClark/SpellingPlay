@@ -51,7 +51,7 @@ export const activities = [
     id: 'spellingTest',
     title: 'Spelling Test',
     image: '/images/spellingtest.png',
-    description: 'Test yourself with an audio quiz',
+    description: 'End of the week test',
     directions:
       'Listen carefully to the audio for each word. When you hear the word, write it on the blank line. After you’ve written all the words, compare with the answer key to see how you did.',
   },
