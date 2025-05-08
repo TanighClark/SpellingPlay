@@ -59,9 +59,11 @@ async function generateSentences(words) {
   ];
 
   try {
-    const resp = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages,
+    const response = await openai.createCompletion({
+      model: 'text-davinci-003',
+      prompt: messages[1].content,
+      max_tokens: 500,
+      temperature: 0.7,
     });
 
     const content = resp.choices[0].message.content.trim();
