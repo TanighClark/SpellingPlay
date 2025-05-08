@@ -2,8 +2,11 @@ app = "spelling-app"
 primary_region = "iad"
 
 [build]
-  # Use Paketo’s Node.js buildpack—no local Docker needed
   builder = "paketobuildpacks/builder:base"
+  buildpacks = [
+    "paketo-buildpacks/node-engine",
+    "paketo-buildpacks/chrome"
+  ]
 
 [http_service]
   internal_port = 8080
