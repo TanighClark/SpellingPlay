@@ -12,6 +12,19 @@ dist
 dist-ssr
 *.local
 server/.env
+# local env files
+*.env
+
+client/.env
+server/.env
+
+# Dependencies
+client/node_modules/
+server/node_modules/
+
+# dependencies
+/server/node_modules/
+/client/node_modules/
 
 
 

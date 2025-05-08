@@ -8,10 +8,11 @@ export default function Preview() {
   const { words, listName, activity, title, directions } = state || {};
 
   // redirect home if no data
-  if (!words) {
-    navigate('/');
-    return null;
-  }
+  useEffect(() => {
+    if (!words) navigate('/');
+  }, [words, navigate]);
+
+  if (!words) return null;
 
   // store the blob URL for our PDF
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -21,8 +22,8 @@ export default function Preview() {
     async function fetchPdf() {
       try {
         setLoading(true);
-        const baseUrl =
-          import.meta.env.VITE_API_URL || 'https://spelling-app.fly.dev';
+        const baseUrl = import.meta.env.VITE_API_URL;
+
         const resp = await fetch(`${baseUrl}/api/generate-pdf`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

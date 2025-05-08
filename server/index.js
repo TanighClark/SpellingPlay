@@ -15,10 +15,11 @@ const app = express();
 const allowedOrigins = [
   'https://spelling-play.vercel.app',
   'https://spelling-app.fly.dev',
-  'http://localhost:5174', // Include localhost during development
+  'http://localhost:5173',
+  'https://www.spelling-play.vercel.app', // Example for subdomain
 ];
 
-app.use(
+/*app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
@@ -30,7 +31,10 @@ app.use(
     methods: ['GET', 'POST'],
     credentials: true,
   })
-);
+);*/
+
+app.use(cors());
+
 console.log('API Key:', process.env.OPENAI_API_KEY);
 app.use(express.json());
 
@@ -59,15 +63,21 @@ async function generateSentences(words) {
   ];
 
   try {
-    const response = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt: messages[1].content,
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini', // or gpt-4, etc.
+      messages, // use your full messages array
       max_tokens: 500,
       temperature: 0.7,
     });
 
-    const content = resp.choices[0].message.content.trim();
+    let content = response.choices[0].message.content.trim();
     console.log('Raw OpenAI Response:', content);
+
+    // Strip code fences if present:
+    content = content
+      .replace(/^```json\s*/, '') // remove leading ```json
+      .replace(/```$/m, ''); // remove trailing ```
+    console.log('Cleaned JSON payload:', content);
 
     return JSON.parse(content);
   } catch (err) {
@@ -177,7 +187,7 @@ app.post('/api/generate-pdf', async (req, res) => {
 
     const itemStrategies = {
       fillblank: () => generateSentences(words),
-      scrambledWords: () =>
+      scrambleWords: () =>
         words.map((word) => ({
           sentence: scrambleWord(word),
           answer: word,
@@ -215,26 +225,23 @@ app.post('/api/generate-pdf', async (req, res) => {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="${listName || 'worksheet'}_${activity}.pdf"`
-    );
-
-    const pdfStream = await page.createPDFStream({
+    // new code
+    const pdfBuffer = await page.pdf({
       format: 'Letter',
       printBackground: true,
       margin: { top: '30px', bottom: '30px', left: '30px', right: '30px' },
     });
 
-    pdfStream.pipe(res);
-
-    pdfStream.on('error', (err) => {
-      console.error('PDF Stream Error:', err);
-      res.status(500).end();
-    });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${listName || 'worksheet'}_${activity}.pdf"`
+    );
+    res.send(pdfBuffer);
   } catch (err) {
-    console.error('Error generating PDF:', err.message);
+    console.error('*** PDF ROUTE ERROR START ***');
+    console.error(err); // full error + stack
+    console.error('*** PDF ROUTE ERROR END ***');
     res.status(500).json({ error: err.message });
   } finally {
     if (browser) {
