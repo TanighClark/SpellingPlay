@@ -32,11 +32,23 @@
   <meta name="twitter:title" content="Spell & Play" />
   <meta name="twitter:description" content="Create printable spelling games and activities with your own word lists." />
 
+  <!-- in client/index.html, inside <head> -->
+<script src="https://cdn.tailwindcss.com"></script>
+
   <!-- Inter (pro UI font) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- optional: Inter as default UI font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] } } } };
+</script>
 
   <!-- Tailwind (CDN) -->
 <script src="https://cdn.tailwindcss.com"></script>
