@@ -26,6 +26,24 @@
   <meta name="robots" content="index, follow" />
   <meta name="language" content="en" />
 
+  <!-- Optional: set Inter as default UI font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Configure Tailwind (must be before the CDN script) -->
+<script>
+  window.tailwind = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] }
+      }
+    }
+  }
+</script>
+
+
+
 
 
 
