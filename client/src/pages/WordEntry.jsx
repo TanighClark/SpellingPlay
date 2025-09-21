@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// If you’re moving fully to Tailwind, you can remove this CSS import
-// import '../pages/styles/WordEntry.css';
+
+
 
 export default function WordEntry() {
   const [words, setWords] = useState('');
