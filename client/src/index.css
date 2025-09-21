@@ -65,4 +65,11 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+  /* in index.css */
+.hero::before, .hero::after,
+.hero-section::before, .hero-section::after {
+  content: none !important;
+  display: none !important;
+}
+
 }
