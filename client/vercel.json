@@ -1,9 +1,18 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://spelling-app.fly.dev/api/$1" },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://spelling-app.fly.dev/api/$1"
+    },
     { "source": "/((?!.*\\.).*)", "destination": "/" }
   ],
   "headers": [
+    {
+      "source": "/(robots.txt|sitemap.xml)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
     {
       "source": "/((?!.*\\.).*)",
       "headers": [
