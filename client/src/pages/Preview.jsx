@@ -174,7 +174,11 @@ export default function Preview() {
               <div className="placeholder" role="status" aria-live="polite">
                 PDF preview isn’t supported on this device.
                 <br />
-                <button className="btn btn-primary" style={{ marginTop: 8 }} onClick={openPreviewInNewTab}>
+                <button
+                  className="btn btn-primary"
+                  style={{ marginTop: 8 }}
+                  onClick={openPreviewInNewTab}
+                >
                   Open Preview
                 </button>
               </div>
