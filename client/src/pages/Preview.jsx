@@ -15,8 +15,9 @@ export default function Preview() {
 
   if (!words) return null;
 
-  // store the blob URL for our PDF
+  // store the blob URL for our PDF and image preview (for iOS)
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [imgUrl, setImgUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [serverOnline, setServerOnline] = useState(true);
   const [supportsInlinePdf, setSupportsInlinePdf] = useState(true);
@@ -114,11 +115,47 @@ export default function Preview() {
 
     checkHealth();
     fetchPdf();
+    // Also fetch a PNG preview image for environments where inline PDFs are unreliable
+    async function fetchImagePreview() {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL;
+        const endpoint = baseUrl
+          ? `${baseUrl}/api/generate-preview`
+          : `/api/generate-preview`;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        const resp = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            words,
+            listName,
+            activity,
+            title,
+            directions,
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const blob = await resp.blob();
+        if (!blob.type.startsWith('image/')) throw new Error('Unexpected preview type');
+        const url = URL.createObjectURL(blob);
+        setImgUrl(url);
+      } catch (e) {
+        setImgUrl(null);
+      }
+    }
+
+    if (!supportsInlinePdf) fetchImagePreview();
 
     return () => {
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+      if (imgUrl) URL.revokeObjectURL(imgUrl);
     };
-  }, [words, listName, activity, title, directions]);
+  }, [words, listName, activity, title, directions, supportsInlinePdf]);
 
   const handleDownload = () => {
     if (!pdfUrl) return;
@@ -171,17 +208,25 @@ export default function Preview() {
                 aria-describedby="preview-description"
               />
             ) : (
-              <div className="placeholder" role="status" aria-live="polite">
-                PDF preview isn’t supported on this device.
-                <br />
-                <button
-                  className="btn btn-primary"
-                  style={{ marginTop: 8 }}
-                  onClick={openPreviewInNewTab}
-                >
-                  Open Preview
-                </button>
-              </div>
+              imgUrl ? (
+                <img
+                  src={imgUrl}
+                  alt="Worksheet preview"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
+              ) : (
+                <div className="placeholder" role="status" aria-live="polite">
+                  PDF preview isn’t supported on this device.
+                  <br />
+                  <button
+                    className="btn btn-primary"
+                    style={{ marginTop: 8 }}
+                    onClick={openPreviewInNewTab}
+                  >
+                    Open Preview
+                  </button>
+                </div>
+              )
             )
           ) : (
             <div className="placeholder" role="status" aria-live="polite">

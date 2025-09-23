@@ -56,9 +56,11 @@ async function getBrowser() {
   return browserPromise;
 }
 
-// Simple in-memory cache for recently generated PDFs
+// Simple in-memory caches for recently generated documents
 const PDF_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const IMG_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const pdfCache = new Map(); // key -> { buffer, expiresAt }
+const previewCache = new Map(); // key -> { buffer, expiresAt, contentType }
 function getCacheKey({ words, listName, activity }) {
   return JSON.stringify({ w: words, l: listName, a: activity });
 }
@@ -303,6 +305,59 @@ app.post('/api/generate-pdf', async (req, res) => {
       try {
         await page.close();
       } catch {}
+    }
+  }
+});
+
+// -------- Route: image preview (mobile-friendly) --------
+app.post('/api/generate-preview', async (req, res) => {
+  let page;
+  try {
+    const { words, listName, activity } = req.body || {};
+    const config = activities.find((a) => a.id === activity);
+    if (!config) return res.status(400).json({ error: `Unknown activity: ${activity}` });
+
+    const { title, directions } = config;
+
+    const itemStrategies = {
+      fillblank: () => generateSentences(words),
+      scrambleWords: () => words.map((word) => ({ sentence: scrambleWord(word), answer: word })),
+      fillingInLetters: () => words.map((word) => ({ sentence: hideLetters(word, Math.min(3, Math.floor(word.length / 2))), answer: word })),
+      default: () => words.map((word) => ({ sentence: word, answer: word })),
+    };
+
+    const items = await (itemStrategies[activity] || itemStrategies.default)();
+    const grid = activity === 'wordsearch' ? generateWordSearchGrid(words) : null;
+
+    const templatePath = path.join(__dirname, 'templates', `${activity}.ejs`);
+    const html = await ejs.renderFile(templatePath, { title, directions, wordBank: words, items, grid });
+
+    const key = getCacheKey({ words, listName, activity }) + ':imgv1';
+    const cached = previewCache.get(key);
+    if (cached && cached.expiresAt > Date.now()) {
+      res.setHeader('Content-Type', cached.contentType || 'image/png');
+      return res.send(cached.buffer);
+    }
+
+    const browser = await getBrowser();
+    page = await (await browser).newPage();
+    await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 2 }); // ~Letter at 96dpi
+    await page.setContent(html, { waitUntil: 'domcontentloaded' });
+
+    const imgBuffer = await page.screenshot({ type: 'png', fullPage: true });
+
+    previewCache.set(key, { buffer: imgBuffer, expiresAt: Date.now() + IMG_CACHE_TTL_MS, contentType: 'image/png' });
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(imgBuffer);
+  } catch (err) {
+    console.error('*** PREVIEW ROUTE ERROR START ***');
+    console.error(err);
+    console.error('*** PREVIEW ROUTE ERROR END ***');
+    res.status(500).json({ error: err.message });
+  } finally {
+    if (page) {
+      try { await page.close(); } catch {}
     }
   }
 });
