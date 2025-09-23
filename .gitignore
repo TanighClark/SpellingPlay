@@ -1,8 +1,10 @@
-client/.env
-/server/node_modules
+# --- Node & package managers ---
+/node_modules/
+client/node_modules/
+server/node_modules/
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -10,36 +12,47 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-server/.env
-# local env files
-*.env
-
+# --- Env files (keep examples) ---
+.env
+.env.*
+!.env.example
 client/.env
+client/.env.*
 server/.env
+server/.env.*
 
-# Dependencies
-client/node_modules/
-server/node_modules/
+# --- Build outputs / caches ---
+# Vite/React builds
+/dist/
+client/dist/
+server/dist/
 
-# dependencies
-/server/node_modules/
-/client/node_modules/
+# Common caches and temp
+.cache/
+.tmp/
+.eslintcache
 
+# Coverage
+coverage/
+.nyc_output/
 
+# Puppeteer local Chromium (if ever downloaded outside node_modules)
+/.local-chromium/
+server/.local-chromium/
 
-# Editor directories and files
+# --- Editor & OS junk ---
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Misc ---
+*.sw?
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
 
 

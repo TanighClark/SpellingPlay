@@ -1,0 +1,13 @@
+{
+  "name": "spellingplay",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "dev": "concurrently -k -n client,server -c cyan,magenta \"npm run client\" \"npm run server\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

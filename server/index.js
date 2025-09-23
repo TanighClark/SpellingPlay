@@ -34,8 +34,6 @@ const allowedOrigins = [
 );*/
 
 app.use(cors());
-
-console.log('API Key:', process.env.OPENAI_API_KEY);
 app.use(express.json());
 
 const PORT = process.env.PORT || 8080;

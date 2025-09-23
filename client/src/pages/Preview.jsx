@@ -24,7 +24,11 @@ export default function Preview() {
         setLoading(true);
         const baseUrl = import.meta.env.VITE_API_URL;
 
-        const resp = await fetch(`${baseUrl}/api/generate-pdf`, {
+        const endpoint = baseUrl
+          ? `${baseUrl}/api/generate-pdf`
+          : `/api/generate-pdf`;
+
+        const resp = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -47,8 +51,8 @@ export default function Preview() {
           throw new Error('Failed to generate a valid PDF.');
         }
 
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
+        const objectUrl = URL.createObjectURL(blob);
+        setPdfUrl(objectUrl);
       } catch (err) {
         console.error('PDF fetch failed:', err);
       } finally {
