@@ -81,6 +81,9 @@ export default function ActivityPicker() {
       <Meta
         title="Choose an Activity — Spell & Play"
         description="Select from word search, fill-in-the-blank, scrambles, and more to turn your word list into printable practice."
+        canonical={`${
+          typeof window !== 'undefined' ? window.location.origin : ''
+        }/activities`}
       />
       <h1 className="picker-title">Choose an Activity</h1>
       <section

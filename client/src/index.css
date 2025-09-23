@@ -1,0 +1,28 @@
+/* Visually hidden but accessible to screen readers */
+.sr-only {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	padding: 0 !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	clip: rect(0, 0, 0, 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+}
+
+/* Consistent, high-contrast focus outlines */
+:focus-visible {
+	outline: 3px solid #2563eb;
+	outline-offset: 2px;
+}
+
+/* Respect prefers-reduced-motion for animations/transitions */
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
+	}
+}

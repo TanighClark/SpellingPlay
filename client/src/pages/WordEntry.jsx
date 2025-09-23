@@ -10,7 +10,11 @@ export default function WordEntry() {
 
   // if you still keep AOS on the site, this won't break if it's missing
   useEffect(() => {
-    if (window.AOS) window.AOS.init({ duration: 800, once: true });
+    const reduceMotion =
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion && window.AOS)
+      window.AOS.init({ duration: 800, once: true });
   }, []);
 
   const wordsPreview = words
@@ -33,10 +37,13 @@ export default function WordEntry() {
   };
 
   return (
-    <div className="landing">
+    <main className="landing" role="main">
       <Meta
         title="Spell & Play — Create Spelling Activities"
         description="Paste a word list and generate fun, printable spelling activities in seconds. No logins or ads."
+        canonical={`${
+          typeof window !== 'undefined' ? window.location.origin : ''
+        }/`}
       />
       {/* HERO */}
       <section className="hero">
@@ -270,7 +277,7 @@ export default function WordEntry() {
       </section>
 
       {/* Global footer is rendered by App layout */}
-    </div>
+    </main>
   );
 }
 

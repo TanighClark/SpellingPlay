@@ -1,6 +1,15 @@
+import Meta from '../components/Meta';
+
 export default function Privacy() {
   return (
     <main className="section" style={{ background: '#fff' }}>
+      <Meta
+        title="Privacy — Spell & Play"
+        description="We don’t store your word lists or PDFs. AI usage is optional and handled per provider’s policy."
+        canonical={`${
+          typeof window !== 'undefined' ? window.location.origin : ''
+        }/privacy`}
+      />
       <div className="container" style={{ maxWidth: 900 }}>
         <h1 className="section-title" style={{ textAlign: 'left' }}>
           Privacy

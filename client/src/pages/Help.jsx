@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import Meta, { JsonLd } from '../components/Meta';
 
 export default function Help() {
   const [name, setName] = useState('');
@@ -18,6 +19,53 @@ export default function Help() {
 
   return (
     <div className="help-page">
+      <Meta
+        title="Help & FAQs — Spell & Play"
+        description="Read getting-started tips, privacy details, and answers to common questions about generating printable spelling activities."
+        canonical={`${
+          typeof window !== 'undefined' ? window.location.origin : ''
+        }/help`}
+      />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'Do I need an account?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'No account needed. SpellPlay is fast and barrier-free.',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'What if my worksheet looks empty?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Make sure you have entered your word list before generating.',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'Can I reuse word lists?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes, paste any list you’ve used before to generate a fresh worksheet.',
+              },
+            },
+            {
+              '@type': 'Question',
+              name: 'Is my data stored?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'We do not store your data. Lists and PDFs are processed in-memory; a short-lived cache (~5 minutes) speeds retries.',
+              },
+            },
+          ],
+        }}
+      />
       <section className="section" style={{ background: '#fff' }}>
         <div className="container">
           <h1

@@ -111,6 +111,9 @@ export default function Preview() {
           title || 'worksheet'
         } for ${listName || 'your spelling list'} (${words.length} words).`}
       />
+      <p id="preview-description" className="sr-only">
+        Your worksheet preview. Use the Download PDF button to save a copy.
+      </p>
       <h1 id="preview-title" className="preview-title">
         {title} is Ready!
       </h1>
@@ -140,6 +143,7 @@ export default function Preview() {
         <div className="preview-details">
           {(loading || !pdfUrl) && (
             <div
+              aria-live="polite"
               style={{
                 marginBottom: 8,
                 fontSize: 12,
