@@ -19,8 +19,18 @@ export default function Preview() {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [serverOnline, setServerOnline] = useState(true);
+  const [supportsInlinePdf, setSupportsInlinePdf] = useState(true);
 
   useEffect(() => {
+    // Detect environments where inline PDF preview is unreliable (iOS Safari)
+    try {
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      setSupportsInlinePdf(!isIOS);
+    } catch (_) {
+      setSupportsInlinePdf(true);
+    }
+
     async function checkHealth() {
       try {
         const baseUrl = import.meta.env.VITE_API_URL;
@@ -120,6 +130,15 @@ export default function Preview() {
     a.remove();
   };
 
+  const openPreviewInNewTab = () => {
+    if (!pdfUrl) return;
+    const opened = window.open(pdfUrl, '_blank', 'noopener');
+    if (!opened) {
+      // fallback: navigate in the same tab
+      window.location.href = pdfUrl;
+    }
+  };
+
   return (
     <section className="preview-page" aria-labelledby="preview-title">
       <Meta
@@ -142,14 +161,24 @@ export default function Preview() {
               Loading preview…
             </div>
           ) : pdfUrl ? (
-            <iframe
-              src={pdfUrl}
-              title={`Preview of ${title} worksheet`}
-              width="100%"
-              height="500"
-              loading="lazy"
-              aria-describedby="preview-description"
-            />
+            supportsInlinePdf ? (
+              <iframe
+                src={pdfUrl}
+                title={`Preview of ${title} worksheet`}
+                width="100%"
+                height="500"
+                loading="lazy"
+                aria-describedby="preview-description"
+              />
+            ) : (
+              <div className="placeholder" role="status" aria-live="polite">
+                PDF preview isn’t supported on this device.
+                <br />
+                <button className="btn btn-primary" style={{ marginTop: 8 }} onClick={openPreviewInNewTab}>
+                  Open Preview
+                </button>
+              </div>
+            )
           ) : (
             <div className="placeholder" role="status" aria-live="polite">
               We’re having trouble connecting. Please try again.
@@ -205,6 +234,15 @@ export default function Preview() {
             >
               Download PDF
             </button>
+            {!supportsInlinePdf && pdfUrl && (
+              <button
+                className="btn btn-secondary"
+                onClick={openPreviewInNewTab}
+                aria-label="Open PDF preview in a new tab"
+              >
+                Open Preview
+              </button>
+            )}
             {!pdfUrl && (
               <button
                 className="btn btn-secondary"
