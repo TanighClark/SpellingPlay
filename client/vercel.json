@@ -1,11 +1,10 @@
-
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/((?!.*\\.).*)", "destination": "/" }
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/((?!.*\\.).*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
