@@ -315,22 +315,35 @@ app.post('/api/generate-preview', async (req, res) => {
   try {
     const { words, listName, activity } = req.body || {};
     const config = activities.find((a) => a.id === activity);
-    if (!config) return res.status(400).json({ error: `Unknown activity: ${activity}` });
+    if (!config)
+      return res.status(400).json({ error: `Unknown activity: ${activity}` });
 
     const { title, directions } = config;
 
     const itemStrategies = {
       fillblank: () => generateSentences(words),
-      scrambleWords: () => words.map((word) => ({ sentence: scrambleWord(word), answer: word })),
-      fillingInLetters: () => words.map((word) => ({ sentence: hideLetters(word, Math.min(3, Math.floor(word.length / 2))), answer: word })),
+      scrambleWords: () =>
+        words.map((word) => ({ sentence: scrambleWord(word), answer: word })),
+      fillingInLetters: () =>
+        words.map((word) => ({
+          sentence: hideLetters(word, Math.min(3, Math.floor(word.length / 2))),
+          answer: word,
+        })),
       default: () => words.map((word) => ({ sentence: word, answer: word })),
     };
 
     const items = await (itemStrategies[activity] || itemStrategies.default)();
-    const grid = activity === 'wordsearch' ? generateWordSearchGrid(words) : null;
+    const grid =
+      activity === 'wordsearch' ? generateWordSearchGrid(words) : null;
 
     const templatePath = path.join(__dirname, 'templates', `${activity}.ejs`);
-    const html = await ejs.renderFile(templatePath, { title, directions, wordBank: words, items, grid });
+    const html = await ejs.renderFile(templatePath, {
+      title,
+      directions,
+      wordBank: words,
+      items,
+      grid,
+    });
 
     const key = getCacheKey({ words, listName, activity }) + ':imgv1';
     const cached = previewCache.get(key);
@@ -346,7 +359,11 @@ app.post('/api/generate-preview', async (req, res) => {
 
     const imgBuffer = await page.screenshot({ type: 'png', fullPage: true });
 
-    previewCache.set(key, { buffer: imgBuffer, expiresAt: Date.now() + IMG_CACHE_TTL_MS, contentType: 'image/png' });
+    previewCache.set(key, {
+      buffer: imgBuffer,
+      expiresAt: Date.now() + IMG_CACHE_TTL_MS,
+      contentType: 'image/png',
+    });
 
     res.setHeader('Content-Type', 'image/png');
     res.send(imgBuffer);
@@ -357,7 +374,9 @@ app.post('/api/generate-preview', async (req, res) => {
     res.status(500).json({ error: err.message });
   } finally {
     if (page) {
-      try { await page.close(); } catch {}
+      try {
+        await page.close();
+      } catch {}
     }
   }
 });

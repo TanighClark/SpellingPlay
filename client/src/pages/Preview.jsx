@@ -141,7 +141,8 @@ export default function Preview() {
 
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const blob = await resp.blob();
-        if (!blob.type.startsWith('image/')) throw new Error('Unexpected preview type');
+        if (!blob.type.startsWith('image/'))
+          throw new Error('Unexpected preview type');
         const url = URL.createObjectURL(blob);
         setImgUrl(url);
       } catch (e) {
@@ -207,26 +208,24 @@ export default function Preview() {
                 loading="lazy"
                 aria-describedby="preview-description"
               />
+            ) : imgUrl ? (
+              <img
+                src={imgUrl}
+                alt="Worksheet preview"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             ) : (
-              imgUrl ? (
-                <img
-                  src={imgUrl}
-                  alt="Worksheet preview"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-              ) : (
-                <div className="placeholder" role="status" aria-live="polite">
-                  PDF preview isn’t supported on this device.
-                  <br />
-                  <button
-                    className="btn btn-primary"
-                    style={{ marginTop: 8 }}
-                    onClick={openPreviewInNewTab}
-                  >
-                    Open Preview
-                  </button>
-                </div>
-              )
+              <div className="placeholder" role="status" aria-live="polite">
+                PDF preview isn’t supported on this device.
+                <br />
+                <button
+                  className="btn btn-primary"
+                  style={{ marginTop: 8 }}
+                  onClick={openPreviewInNewTab}
+                >
+                  Open Preview
+                </button>
+              </div>
             )
           ) : (
             <div className="placeholder" role="status" aria-live="polite">
