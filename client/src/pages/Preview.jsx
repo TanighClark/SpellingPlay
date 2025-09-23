@@ -35,6 +35,10 @@ export default function Preview() {
       }
     }
 
+    async function sleep(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
     async function fetchPdf() {
       try {
         setLoading(true);
@@ -44,39 +48,52 @@ export default function Preview() {
           ? `${baseUrl}/api/generate-pdf`
           : `/api/generate-pdf`;
 
-        // Abort fetch if it hangs too long
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        // up to 3 attempts with short backoff to ride out warm-ups
+        const MAX_RETRIES = 2;
+        let attempt = 0;
+        let lastErr;
+        while (attempt <= MAX_RETRIES) {
+          try {
+            // Abort fetch if it hangs too long
+            const controller = new AbortController();
+            const timeoutMs = attempt === 0 ? 15000 : 12000; // give first try longer
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-        const resp = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            words,
-            listName,
-            activity,
-            title,
-            directions,
-          }),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
+            const resp = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                words,
+                listName,
+                activity,
+                title,
+                directions,
+              }),
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
 
-        if (!resp.ok)
-          throw new Error(`PDF generation failed: ${resp.statusText}`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
-        const blob = await resp.blob();
+            const blob = await resp.blob();
+            if (blob.type !== 'application/pdf') {
+              throw new Error(`Unexpected content type: ${blob.type}`);
+            }
 
-        // Verify the content type
-        if (blob.type !== 'application/pdf') {
-          console.error('Unexpected content type:', blob.type);
-          throw new Error('Failed to generate a valid PDF.');
+            const objectUrl = URL.createObjectURL(blob);
+            setPdfUrl(objectUrl);
+            setServerOnline(true);
+            lastErr = undefined;
+            break; // success
+          } catch (e) {
+            lastErr = e;
+            if (attempt === MAX_RETRIES) break;
+            // brief backoff then retry
+            await sleep(1000 + attempt * 1000);
+            attempt += 1;
+          }
         }
-
-        const objectUrl = URL.createObjectURL(blob);
-        setPdfUrl(objectUrl);
-        // If PDF succeeded, server is definitely online
-        setServerOnline(true);
+        if (lastErr) throw lastErr;
       } catch (err) {
         console.error('PDF fetch failed:', err);
         setPdfUrl(null);
