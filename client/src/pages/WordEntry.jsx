@@ -5,7 +5,6 @@ import './WordEntry.css'; // <-- scoped styles for this page only
 export default function WordEntry() {
   const [words, setWords] = useState('');
   const [listName, setListName] = useState('');
-  const [saveList, setSaveList] = useState(false);
   const navigate = useNavigate();
 
   // if you still keep AOS on the site, this won't break if it's missing
@@ -28,7 +27,7 @@ export default function WordEntry() {
       return;
     }
     navigate('/activities', {
-      state: { words: uniqueWords, listName: finalListName, saveList },
+      state: { words: uniqueWords, listName: finalListName },
     });
   };
 
@@ -213,15 +212,7 @@ export default function WordEntry() {
                   />
                 </div>
 
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={saveList}
-                    onChange={() => setSaveList((v) => !v)}
-                    aria-checked={saveList}
-                  />
-                  <span>Save this list</span>
-                </label>
+                {/* Removed unused "Save this list" checkbox */}
 
                 {wordsPreview.length > 0 && (
                   <div className="preview" aria-live="polite">

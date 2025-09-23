@@ -7,33 +7,11 @@ import { fileURLToPath } from 'url';
 import ejs from 'ejs';
 import puppeteer from 'puppeteer';
 import { activities } from './data/activities.js';
-import nodemailer from 'nodemailer';
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const allowedOrigins = [
-  'https://spelling-play.vercel.app',
-  'https://spelling-app.fly.dev',
-  'http://localhost:5173',
-  'https://www.spelling-play.vercel.app', // Example for subdomain
-];
-
-/*app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET', 'POST'],
-    credentials: true,
-  })
-);*/
-
 app.use(cors());
 app.use(express.json());
 
@@ -309,67 +287,6 @@ app.post('/api/generate-pdf', async (req, res) => {
         await page.close();
       } catch {}
     }
-  }
-});
-
-// --- Contact form endpoint ---
-app.post('/api/contact', async (req, res) => {
-  try {
-    const { name, email, message } = req.body || {};
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: 'Missing required fields.' });
-    }
-
-    const {
-      SMTP_HOST,
-      SMTP_PORT,
-      SMTP_USER,
-      SMTP_PASS,
-      CONTACT_TO,
-      CONTACT_FROM,
-    } = process.env;
-
-    if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !CONTACT_TO) {
-      const missing = [
-        !SMTP_HOST && 'SMTP_HOST',
-        !SMTP_PORT && 'SMTP_PORT',
-        !SMTP_USER && 'SMTP_USER',
-        !SMTP_PASS && 'SMTP_PASS',
-        !CONTACT_TO && 'CONTACT_TO',
-      ].filter(Boolean);
-      const baseMsg = 'Email is not configured.';
-      const detail =
-        process.env.NODE_ENV === 'production'
-          ? ''
-          : ` Missing: ${missing.join(', ')}`;
-      return res.status(500).json({ error: baseMsg + detail });
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT) || 587,
-      secure: Number(SMTP_PORT) === 465,
-      auth: { user: SMTP_USER, pass: SMTP_PASS },
-    });
-
-    const info = await transporter.sendMail({
-      from: CONTACT_FROM || SMTP_USER,
-      to: CONTACT_TO,
-      subject: `SpellPlay Help: Message from ${name}`,
-      replyTo: email,
-      text: `From: ${name} <${email}>
-
-${message}`,
-    });
-
-    res.json({ ok: true, id: info.messageId });
-  } catch (err) {
-    console.error('CONTACT ERROR:', err);
-    const msg =
-      process.env.NODE_ENV === 'production'
-        ? 'Failed to send message.'
-        : `Failed to send message: ${err.message}`;
-    res.status(500).json({ error: msg });
   }
 });
 

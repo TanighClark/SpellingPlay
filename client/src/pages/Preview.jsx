@@ -25,7 +25,7 @@ export default function Preview() {
         const baseUrl = import.meta.env.VITE_API_URL;
         const healthUrl = baseUrl ? `${baseUrl}/api/health` : `/api/health`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         const res = await fetch(healthUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
         setServerOnline(res.ok);
@@ -74,6 +74,8 @@ export default function Preview() {
 
         const objectUrl = URL.createObjectURL(blob);
         setPdfUrl(objectUrl);
+        // If PDF succeeded, server is definitely online
+        setServerOnline(true);
       } catch (err) {
         console.error('PDF fetch failed:', err);
         setPdfUrl(null);
@@ -123,30 +125,29 @@ export default function Preview() {
             />
           ) : (
             <div className="placeholder" role="status" aria-live="polite">
-              Failed to load preview.
-              {!serverOnline && (
-                <div style={{ marginTop: 8, color: '#b91c1c' }}>
-                  Server is offline. Please try again shortly.
-                </div>
-              )}
+              We’re having trouble connecting. Please try again.
             </div>
           )}
         </figure>
 
         <div className="preview-details">
-          <div style={{ marginBottom: 8, fontSize: 12 }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: serverOnline ? '#16a34a' : '#b91c1c',
-                marginRight: 6,
-              }}
-            />
-            {serverOnline ? 'Server online' : 'Server offline'}
-          </div>
+          {(loading || !pdfUrl) && (
+            <div style={{ marginBottom: 8, fontSize: 12 }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: loading ? '#16a34a' : '#b91c1c',
+                  marginRight: 6,
+                }}
+              />
+              {loading
+                ? 'Preparing your worksheet…'
+                : 'Having trouble connecting. Please try again.'}
+            </div>
+          )}
           <dl>
             <dt>Activity:</dt>
             <dd>{title}</dd>
