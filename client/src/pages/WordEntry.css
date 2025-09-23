@@ -7,6 +7,23 @@
 .section-title { font-size:clamp(1.75rem, 3vw, 2.5rem); font-weight:800; text-align:center; margin:0 0 24px; }
 .section-title.light { color:#fff; }
 
+/* More breathing room below headings for Why/How sections */
+.why .section-title,
+.how .section-title {
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+
+/* Shift content higher: less top padding, more bottom padding */
+.section.why {
+  padding-top: clamp(28px, 3vw, 48px);
+  padding-bottom: clamp(96px, 7vw, 128px);
+}
+
+.section.how {
+  padding-top: clamp(28px, 3vw, 48px);
+  padding-bottom: clamp(96px, 7vw, 128px);
+}
+
 /* HERO */
 .hero { color:#fff; background:linear-gradient(135deg,#1e3a8a 0%, #0f172a 100%); padding:80px 0; }
 .hero-row { display:flex; gap:40px; align-items:center; flex-direction:column; }
