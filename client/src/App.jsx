@@ -1,5 +1,5 @@
 import Navbar from './components/Navbar';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import WordEntry from './pages/WordEntry';
 import ActivityPicker from './pages/ActivityPicker';
 import Preview from './pages/Preview';
@@ -9,6 +9,8 @@ import Help from './pages/Help';
 import Privacy from './pages/Privacy';
 
 export default function App() {
+  const location = useLocation();
+  const hideFooter = location.pathname === '/preview';
   return (
     <div
       style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
@@ -24,7 +26,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
         </Routes>
       </div>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 }
