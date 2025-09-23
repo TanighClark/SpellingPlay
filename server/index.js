@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import ejs from 'ejs';
 import puppeteer from 'puppeteer';
 import { activities } from './data/activities.js';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -42,6 +43,42 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // -------- Helpers --------
 
+// Reuse a single Puppeteer browser to avoid cold-start overhead per request
+let browserPromise;
+async function getBrowser() {
+  if (!browserPromise) {
+    browserPromise = puppeteer.launch({
+      headless: 'new',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--no-zygote',
+        '--disable-gpu',
+      ],
+    });
+  }
+  return browserPromise;
+}
+
+// Simple in-memory cache for recently generated PDFs
+const PDF_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const pdfCache = new Map(); // key -> { buffer, expiresAt }
+function getCacheKey({ words, listName, activity }) {
+  return JSON.stringify({ w: words, l: listName, a: activity });
+}
+
+function withTimeout(promise, ms, label = 'operation') {
+  let id;
+  const timeout = new Promise((_, reject) => {
+    id = setTimeout(
+      () => reject(new Error(`${label} timed out after ${ms}ms`)),
+      ms
+    );
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(id));
+}
+
 async function generateSentences(words) {
   const messages = [
     {
@@ -61,12 +98,16 @@ async function generateSentences(words) {
   ];
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini', // or gpt-4, etc.
-      messages, // use your full messages array
-      max_tokens: 500,
-      temperature: 0.7,
-    });
+    const response = await withTimeout(
+      openai.chat.completions.create({
+        model: 'gpt-4o-mini', // or gpt-4, etc.
+        messages, // use your full messages array
+        max_tokens: 500,
+        temperature: 0.7,
+      }),
+      8000,
+      'OpenAI generation'
+    );
 
     let content = response.choices[0].message.content.trim();
     console.log('Raw OpenAI Response:', content);
@@ -79,8 +120,11 @@ async function generateSentences(words) {
 
     return JSON.parse(content);
   } catch (err) {
-    console.error('Error in generateSentences:', err.message);
-    throw new Error(`Error generating sentences: ${err.message}`);
+    console.warn('OpenAI unavailable, using fallback sentences:', err.message);
+    return words.map((word) => ({
+      sentence: `Use the word _____ in a sentence.`,
+      answer: word,
+    }));
   }
 }
 
@@ -167,8 +211,12 @@ function generateWordSearchGrid(words, size = 15) {
 }
 
 // -------- Route with Streaming PDF --------
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, uptime: process.uptime(), timestamp: Date.now() });
+});
+
 app.post('/api/generate-pdf', async (req, res) => {
-  let browser;
+  let page;
 
   try {
     const { words, listName, activity } = req.body || {};
@@ -215,19 +263,33 @@ app.post('/api/generate-pdf', async (req, res) => {
       grid,
     });
 
-    browser = await puppeteer.launch({
-      headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    // Cache check
+    const key = getCacheKey({ words, listName, activity });
+    const cached = pdfCache.get(key);
+    if (cached && cached.expiresAt > Date.now()) {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${listName || 'worksheet'}_${activity}.pdf"`
+      );
+      return res.send(cached.buffer);
+    }
 
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const browser = await getBrowser();
+    page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'domcontentloaded' });
 
     // new code
     const pdfBuffer = await page.pdf({
       format: 'Letter',
       printBackground: true,
       margin: { top: '30px', bottom: '30px', left: '30px', right: '30px' },
+    });
+
+    // write to cache
+    pdfCache.set(key, {
+      buffer: pdfBuffer,
+      expiresAt: Date.now() + PDF_CACHE_TTL_MS,
     });
 
     res.setHeader('Content-Type', 'application/pdf');
@@ -242,9 +304,72 @@ app.post('/api/generate-pdf', async (req, res) => {
     console.error('*** PDF ROUTE ERROR END ***');
     res.status(500).json({ error: err.message });
   } finally {
-    if (browser) {
-      await browser.close();
+    if (page) {
+      try {
+        await page.close();
+      } catch {}
     }
+  }
+});
+
+// --- Contact form endpoint ---
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, message } = req.body || {};
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    const {
+      SMTP_HOST,
+      SMTP_PORT,
+      SMTP_USER,
+      SMTP_PASS,
+      CONTACT_TO,
+      CONTACT_FROM,
+    } = process.env;
+
+    if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !CONTACT_TO) {
+      const missing = [
+        !SMTP_HOST && 'SMTP_HOST',
+        !SMTP_PORT && 'SMTP_PORT',
+        !SMTP_USER && 'SMTP_USER',
+        !SMTP_PASS && 'SMTP_PASS',
+        !CONTACT_TO && 'CONTACT_TO',
+      ].filter(Boolean);
+      const baseMsg = 'Email is not configured.';
+      const detail =
+        process.env.NODE_ENV === 'production'
+          ? ''
+          : ` Missing: ${missing.join(', ')}`;
+      return res.status(500).json({ error: baseMsg + detail });
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT) || 587,
+      secure: Number(SMTP_PORT) === 465,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+    });
+
+    const info = await transporter.sendMail({
+      from: CONTACT_FROM || SMTP_USER,
+      to: CONTACT_TO,
+      subject: `SpellPlay Help: Message from ${name}`,
+      replyTo: email,
+      text: `From: ${name} <${email}>
+
+${message}`,
+    });
+
+    res.json({ ok: true, id: info.messageId });
+  } catch (err) {
+    console.error('CONTACT ERROR:', err);
+    const msg =
+      process.env.NODE_ENV === 'production'
+        ? 'Failed to send message.'
+        : `Failed to send message: ${err.message}`;
+    res.status(500).json({ error: msg });
   }
 });
 

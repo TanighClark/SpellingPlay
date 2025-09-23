@@ -21,7 +21,8 @@ export default function WordEntry() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const uniqueWords = Array.from(new Set(wordsPreview));
-    const finalListName = listName.trim() || `List - ${new Date().toLocaleDateString()}`;
+    const finalListName =
+      listName.trim() || `List - ${new Date().toLocaleDateString()}`;
     if (uniqueWords.length === 0) {
       alert('Please enter at least one word.');
       return;
@@ -38,14 +39,27 @@ export default function WordEntry() {
         <div className="container">
           <div className="hero-row">
             <div className="hero-text">
-              <h1 className="hero-title">Effortless Spelling Practice Kids Enjoy</h1>
+              <h1 className="hero-title">
+                Effortless Spelling Practice Kids Enjoy
+              </h1>
               <p className="hero-sub">
-                Turn any word list into fun, printable activities that make learning stick.
+                Turn any word list into fun, printable activities that make
+                learning stick.
               </p>
               <a href="#create-list" className="btn-cta">
                 Paste My Word List
-                <svg className="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                <svg
+                  className="icon-arrow"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </a>
             </div>
@@ -78,17 +92,17 @@ export default function WordEntry() {
             <Card
               title="Game-Based Activities"
               text="Fill-in-the-blank, word scrambles, and engaging word searches."
-              icon="plus"
+              icon="game"
             />
             <Card
               title="Printable PDFs"
               text="No logins, no ads, no distractions. Just ready-to-use materials."
-              icon="lines"
+              icon="printer"
             />
             <Card
               title="Time-Saving Design"
               text="Perfect for busy parents, teachers, and tutors on tight schedules."
-              icon="grid"
+              icon="clock"
             />
           </div>
         </div>
@@ -100,7 +114,9 @@ export default function WordEntry() {
           <div className="stats-box">
             <h2>10,000+</h2>
             <p className="stats-sub">Weekly Spelling Lists Processed</p>
-            <p className="stats-small">Helping children turn lists into learning, one activity at a time</p>
+            <p className="stats-small">
+              Helping children turn lists into learning, one activity at a time
+            </p>
           </div>
         </div>
       </section>
@@ -111,10 +127,22 @@ export default function WordEntry() {
           <h2 className="section-title">Why SpellPlay Delivers Results</h2>
 
           <div className="why-grid">
-            <Why title="Sustained Motivation" text="Children stay engaged because practice feels like enjoyable play." />
-            <Why title="Time Efficiency" text="Parents & teachers reclaim hours of valuable preparation time." />
-            <Why title="Confidence Building" text="Reinforces learning through strategic repetition and variety." />
-            <Why title="Trusted Solution" text="Relied upon by families and educational professionals nationwide." />
+            <Why
+              title="Sustained Motivation"
+              text="Children stay engaged because practice feels like enjoyable play."
+            />
+            <Why
+              title="Time Efficiency"
+              text="Parents & teachers reclaim hours of valuable preparation time."
+            />
+            <Why
+              title="Confidence Building"
+              text="Reinforces learning through strategic repetition and variety."
+            />
+            <Why
+              title="Trusted Solution"
+              text="Relied upon by families and educational professionals nationwide."
+            />
           </div>
         </div>
       </section>
@@ -126,16 +154,19 @@ export default function WordEntry() {
 
           <div className="how-grid">
             <Step
+              step={1}
               title="1. Drop in Your Word List"
               text="Copy and paste your weekly spelling words into our tool."
             />
             <Step
+              step={2}
               title="2. Choose Activities"
               text="Select from fun, engaging practice exercises that feel like play."
             />
             <Step
+              step={3}
               title="3. Print & Practice"
-              text="Get ready-to-use materials instantly—no logins or dashboards."
+              text="Get ready-to-use materials instantly, no logins or dashboards."
             />
           </div>
         </div>
@@ -145,14 +176,18 @@ export default function WordEntry() {
       <section className="section create" id="create-list">
         <div className="container">
           <div className="create-inner">
-            <h2 className="section-title light">Create Your Spelling Practice Now</h2>
+            <h2 className="section-title light">
+              Create Your Spelling Practice Now
+            </h2>
             <p className="create-sub">
-              Transform your word list into engaging, printable activities—ready in under a minute.
+              Transform your word list into engaging, printable activities,ready
+              in under a minute.
             </p>
 
             <div className="card">
               <p className="card-lead">
-                Professional tools for parents and educators—quick setup, quality results, no distractions.
+                Professional tools for parents and educators—quick setup,
+                quality results, no distractions.
               </p>
 
               <form onSubmit={handleSubmit} className="form">
@@ -193,15 +228,27 @@ export default function WordEntry() {
                     <h4>Words Preview:</h4>
                     <ul className="preview-grid">
                       {wordsPreview.map((w, i) => (
-                        <li key={i}><strong>{w}</strong></li>
+                        <li key={i}>
+                          <strong>{w}</strong>
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
 
                 <button type="submit" className="submit-btn">
-                  <svg className="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v10m0 0l-4-4m4 4l4-4M5 19h14" />
+                  <svg
+                    className="icon-download"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 5v10m0 0l-4-4m4 4l4-4M5 19h14"
+                    />
                   </svg>
                   Generate Practice Activities
                 </button>
@@ -211,15 +258,7 @@ export default function WordEntry() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-inner">
-            <span className="brand">SpellPlay</span>
-            <p className="muted">Simple, effective spelling practice tools for parents and teachers.</p>
-          </div>
-        </div>
-      </footer>
+      {/* Global footer is rendered by App layout */}
     </div>
   );
 }
@@ -231,22 +270,87 @@ function Card({ title, text, icon }) {
       <div className="icon-circle">
         {icon === 'doc' && (
           <svg viewBox="0 0 24 24" className="icon">
-            <path d="M4 6h16v12H4zM9 8h6M9 12h6M9 16h6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path
+              d="M4 6h16v12H4zM9 8h6M9 12h6M9 16h6"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
           </svg>
         )}
-        {icon === 'plus' && (
+        {icon === 'game' && (
           <svg viewBox="0 0 24 24" className="icon">
-            <path d="M12 6v12M6 12h12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <rect
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+              rx="3"
+              ry="3"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+            <circle cx="16" cy="8" r="1.5" fill="currentColor" />
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="8" cy="16" r="1.5" fill="currentColor" />
+            <circle cx="16" cy="16" r="1.5" fill="currentColor" />
           </svg>
         )}
-        {icon === 'lines' && (
+        {icon === 'printer' && (
           <svg viewBox="0 0 24 24" className="icon">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <rect
+              x="6"
+              y="9"
+              width="12"
+              height="8"
+              rx="2"
+              ry="2"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <rect
+              x="8"
+              y="4"
+              width="8"
+              height="4"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <rect
+              x="8"
+              y="14"
+              width="8"
+              height="6"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <path d="M6 12h12" stroke="currentColor" strokeWidth="2" />
           </svg>
         )}
-        {icon === 'grid' && (
+        {icon === 'clock' && (
           <svg viewBox="0 0 24 24" className="icon">
-            <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" stroke="currentColor" strokeWidth="2" fill="none" />
+            <circle
+              cx="12"
+              cy="12"
+              r="8"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <path
+              d="M12 7v5l3 3"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         )}
       </div>
@@ -261,7 +365,13 @@ function Why({ title, text }) {
     <div className="why-item">
       <div className="tick">
         <svg viewBox="0 0 24 24" className="icon-small">
-          <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <path
+            d="M5 13l4 4L19 7"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+          />
         </svg>
       </div>
       <div>
@@ -272,13 +382,11 @@ function Why({ title, text }) {
   );
 }
 
-function Step({ title, text }) {
+function Step({ title, text, step }) {
   return (
     <div className="card step">
-      <div className="icon-circle">
-        <svg viewBox="0 0 24 24" className="icon">
-          <path d="M12 6v12M6 12h12" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
-        </svg>
+      <div className="icon-circle" aria-label={`Step ${step}`}>
+        <span className="icon-number">{step ?? ''}</span>
       </div>
       <h3>{title}</h3>
       <p className="muted">{text}</p>

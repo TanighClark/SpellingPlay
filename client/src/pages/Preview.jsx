@@ -17,8 +17,23 @@ export default function Preview() {
   // store the blob URL for our PDF
   const [pdfUrl, setPdfUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [serverOnline, setServerOnline] = useState(true);
 
   useEffect(() => {
+    async function checkHealth() {
+      try {
+        const baseUrl = import.meta.env.VITE_API_URL;
+        const healthUrl = baseUrl ? `${baseUrl}/api/health` : `/api/health`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch(healthUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        setServerOnline(res.ok);
+      } catch (_) {
+        setServerOnline(false);
+      }
+    }
+
     async function fetchPdf() {
       try {
         setLoading(true);
@@ -27,6 +42,10 @@ export default function Preview() {
         const endpoint = baseUrl
           ? `${baseUrl}/api/generate-pdf`
           : `/api/generate-pdf`;
+
+        // Abort fetch if it hangs too long
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const resp = await fetch(endpoint, {
           method: 'POST',
@@ -38,7 +57,9 @@ export default function Preview() {
             title,
             directions,
           }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
 
         if (!resp.ok)
           throw new Error(`PDF generation failed: ${resp.statusText}`);
@@ -55,11 +76,13 @@ export default function Preview() {
         setPdfUrl(objectUrl);
       } catch (err) {
         console.error('PDF fetch failed:', err);
+        setPdfUrl(null);
       } finally {
         setLoading(false);
       }
     }
 
+    checkHealth();
     fetchPdf();
 
     return () => {
@@ -101,11 +124,29 @@ export default function Preview() {
           ) : (
             <div className="placeholder" role="status" aria-live="polite">
               Failed to load preview.
+              {!serverOnline && (
+                <div style={{ marginTop: 8, color: '#b91c1c' }}>
+                  Server is offline. Please try again shortly.
+                </div>
+              )}
             </div>
           )}
         </figure>
 
         <div className="preview-details">
+          <div style={{ marginBottom: 8, fontSize: 12 }}>
+            <span
+              style={{
+                display: 'inline-block',
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: serverOnline ? '#16a34a' : '#b91c1c',
+                marginRight: 6,
+              }}
+            />
+            {serverOnline ? 'Server online' : 'Server offline'}
+          </div>
           <dl>
             <dt>Activity:</dt>
             <dd>{title}</dd>
@@ -129,6 +170,15 @@ export default function Preview() {
             >
               Download PDF
             </button>
+            {!pdfUrl && (
+              <button
+                className="btn btn-secondary"
+                onClick={() => window.location.reload()}
+                aria-label="Retry loading the preview"
+              >
+                Retry
+              </button>
+            )}
             <button
               className="btn btn-secondary"
               onClick={() =>

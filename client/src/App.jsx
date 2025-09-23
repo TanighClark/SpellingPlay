@@ -4,6 +4,8 @@ import WordEntry from './pages/WordEntry';
 import ActivityPicker from './pages/ActivityPicker';
 import Preview from './pages/Preview';
 import ScrollToTop from './components/ScrollToTop'; // ✅ Add this line
+import Footer from './components/Footer';
+import Help from './pages/Help';
 
 export default function App() {
   return (
@@ -14,7 +16,9 @@ export default function App() {
         <Route path="/" element={<WordEntry />} />
         <Route path="/activities" element={<ActivityPicker />} />
         <Route path="/preview" element={<Preview />} />
+        <Route path="/help" element={<Help />} />
       </Routes>
+      <Footer />
     </>
   );
 }

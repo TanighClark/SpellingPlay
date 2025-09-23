@@ -31,6 +31,7 @@
 .icon-circle { width:64px; height:64px; border-radius:50%; background:#dbeafe; color:#1e3a8a; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; }
 .icon { width:28px; height:28px; }
 .icon-small { width:18px; height:18px; }
+.icon-number { font-weight:800; font-size:20px; color:#1e3a8a; line-height:1; }
 .muted { color:#6b7280; }
 
 /* STATS */
@@ -112,10 +113,19 @@
 
 .preview { border:1px solid #e5e7eb; background:#f9fafb; border-radius:10px; padding:12px; }
 .preview-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:8px 16px; margin-top:8px; }
+.preview, .preview h4, .preview-grid li, .preview-grid li strong { color:#111827; }
+.preview h4 { font-weight:700; margin:0 0 8px; }
+.preview-grid li strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 20px;
+}
 
 .submit-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border:none; border-radius:10px; background:#1e3a8a; color:#fff; font-weight:700; cursor:pointer; }
 .submit-btn:hover { background:#1b2f73; }
 .icon-download { width:20px; height:20px; }
+
+/* Center the submit button within the grid and prevent stretching */
+.form .submit-btn { justify-self: center; align-self: center; width: auto; }
 
 /* FOOTER */
 .footer { background:#1f2937; color:#fff; padding:48px 0; }
