@@ -21,15 +21,25 @@ export default function Preview() {
   const [loading, setLoading] = useState(true);
   const [serverOnline, setServerOnline] = useState(true);
   const [supportsInlinePdf, setSupportsInlinePdf] = useState(true);
+  const [isMobilePhone, setIsMobilePhone] = useState(false);
 
   useEffect(() => {
     // Detect environments where inline PDF preview is unreliable (iOS Safari)
     try {
       const ua = navigator.userAgent || '';
       const isIOS = /iPad|iPhone|iPod/.test(ua);
+      const isAndroidPhone = /Android/.test(ua) && /Mobile/.test(ua);
+      const coarsePointer =
+        window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      const narrow =
+        window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+      setIsMobilePhone(
+        Boolean(isIOS || isAndroidPhone || (coarsePointer && narrow))
+      );
       setSupportsInlinePdf(!isIOS);
     } catch (_) {
       setSupportsInlinePdf(true);
+      setIsMobilePhone(false);
     }
 
     async function checkHealth() {
@@ -59,17 +69,15 @@ export default function Preview() {
           ? `${baseUrl}/api/generate-pdf`
           : `/api/generate-pdf`;
 
-        // up to 3 attempts with short backoff to ride out warm-ups
-        const MAX_RETRIES = 2;
+        const MAX_RETRIES = 2; // total attempts = MAX_RETRIES + 1
         let attempt = 0;
-        let lastErr;
-        while (attempt <= MAX_RETRIES) {
-          try {
-            // Abort fetch if it hangs too long
-            const controller = new AbortController();
-            const timeoutMs = attempt === 0 ? 15000 : 12000; // give first try longer
-            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        let lastErr = null;
 
+        while (attempt <= MAX_RETRIES) {
+          const controller = new AbortController();
+          const timeoutMs = attempt === 0 ? 15000 : 12000;
+          const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+          try {
             const resp = await fetch(endpoint, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -83,23 +91,19 @@ export default function Preview() {
               signal: controller.signal,
             });
             clearTimeout(timeoutId);
-
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
             const blob = await resp.blob();
             if (blob.type !== 'application/pdf') {
-              throw new Error(`Unexpected content type: ${blob.type}`);
+              throw new Error('Unexpected content type');
             }
-
-            const objectUrl = URL.createObjectURL(blob);
-            setPdfUrl(objectUrl);
-            setServerOnline(true);
-            lastErr = undefined;
-            break; // success
+            const url = URL.createObjectURL(blob);
+            setPdfUrl(url);
+            lastErr = null;
+            break;
           } catch (e) {
+            clearTimeout(timeoutId);
             lastErr = e;
             if (attempt === MAX_RETRIES) break;
-            // brief backoff then retry
             await sleep(1000 + attempt * 1000);
             attempt += 1;
           }
@@ -193,46 +197,56 @@ export default function Preview() {
       </h1>
 
       <div className="preview-panel">
-        <figure className="pdf-thumbnail" aria-label="Worksheet Preview">
-          {loading ? (
-            <div className="placeholder" role="status" aria-live="polite">
-              Loading preview…
-            </div>
-          ) : pdfUrl ? (
-            supportsInlinePdf ? (
-              <iframe
-                src={pdfUrl}
-                title={`Preview of ${title} worksheet`}
-                width="100%"
-                height="500"
-                loading="lazy"
-                aria-describedby="preview-description"
-              />
-            ) : imgUrl ? (
-              <img
-                src={imgUrl}
-                alt="Worksheet preview"
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-              />
+        {isMobilePhone && pdfUrl ? (
+          <div className="mobile-ready-text" aria-live="polite">
+            Your PDF is ready. Tap Download to save.
+          </div>
+        ) : (
+          <figure className="pdf-thumbnail" aria-label="Worksheet Preview">
+            {loading ? (
+              <div className="placeholder" role="status" aria-live="polite">
+                Loading preview…
+              </div>
+            ) : pdfUrl ? (
+              supportsInlinePdf ? (
+                <iframe
+                  src={pdfUrl}
+                  title={`Preview of ${title} worksheet`}
+                  width="100%"
+                  height="500"
+                  loading="lazy"
+                  aria-describedby="preview-description"
+                />
+              ) : imgUrl ? (
+                <img
+                  src={imgUrl}
+                  alt="Worksheet preview"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                  }}
+                />
+              ) : (
+                <div className="placeholder" role="status" aria-live="polite">
+                  PDF preview isn’t supported on this device.
+                  <br />
+                  <button
+                    className="btn btn-primary"
+                    style={{ marginTop: 8 }}
+                    onClick={openPreviewInNewTab}
+                  >
+                    Open Preview
+                  </button>
+                </div>
+              )
             ) : (
               <div className="placeholder" role="status" aria-live="polite">
-                PDF preview isn’t supported on this device.
-                <br />
-                <button
-                  className="btn btn-primary"
-                  style={{ marginTop: 8 }}
-                  onClick={openPreviewInNewTab}
-                >
-                  Open Preview
-                </button>
+                We’re having trouble connecting. Please try again.
               </div>
-            )
-          ) : (
-            <div className="placeholder" role="status" aria-live="polite">
-              We’re having trouble connecting. Please try again.
-            </div>
-          )}
-        </figure>
+            )}
+          </figure>
+        )}
 
         <div className="preview-details">
           {(loading || !pdfUrl) && (
@@ -282,7 +296,7 @@ export default function Preview() {
             >
               Download PDF
             </button>
-            {!supportsInlinePdf && pdfUrl && (
+            {!supportsInlinePdf && pdfUrl && !isMobilePhone && (
               <button
                 className="btn btn-secondary"
                 onClick={openPreviewInNewTab}
