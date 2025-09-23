@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 260px;
+    width: 100%;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -12,8 +12,9 @@
   }
   
   .activity-card img {
-    width: 260px;
-    height: 200px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 13 / 10;
     object-fit: contain;
     flex-shrink: 0;
     background: #f9fafb;
