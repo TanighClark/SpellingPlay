@@ -27,21 +27,10 @@
   <meta name="robots" content="index, follow" />
   <meta name="language" content="en" />
 
-  <!-- Optional: set Inter as default UI font -->
+  <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Configure Tailwind (must be before the CDN script) -->
-  <script>
-    window.tailwind = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] }
-        }
-      }
-    }
-  </script>
 
 
 
@@ -64,44 +53,15 @@
   }
   </script>
 
-  <!-- in client/index.html, inside <head> -->
-
-
-  <!-- Inter (pro UI font) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CDN -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
-        }
-      }
-    }
-  </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- optional: Inter as default UI font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] } } } };
-  </script>
-
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind is compiled via src/styles/tailwind.css; CDN removed to avoid conflicts -->
 
 
   <!-- AOS (optional) -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <script defer src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-  <!-- Inter + Comic Neue (optional, if you like that look) -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Comic+Neue:wght@400;700&display=swap"
-    rel="stylesheet">
+  <!-- Optional: Comic Neue for playful headings -->
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -125,12 +85,8 @@
     gtag('config', 'G-D6NH1B95JD');
   </script>
 
-
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     body {
-      font-family: 'Inter', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f8fafc;

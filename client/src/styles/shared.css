@@ -1,21 +1,25 @@
 /* Shared layout + form styles used across multiple routes */
 
+/* Ensure padding/borders don't cause overflow */
+*, *::before, *::after { box-sizing: border-box; }
+
 /* Layout */
 .container { max-width:1200px; margin:0 auto; padding:0 24px; }
 .section { padding:80px 0; }
 .section-title { font-size:clamp(1.75rem, 3vw, 2.5rem); font-weight:800; text-align:center; margin:0 0 24px; }
 
 /* Cards */
-.card { background:#fff; border-radius:16px; padding:24px; box-shadow:0 8px 28px rgba(0,0,0,.08); }
+.card { background:#fff; border-radius:16px; padding:24px; box-shadow:0 8px 28px rgba(0,0,0,.08); overflow:hidden; }
 
 /* Forms */
-.form { display:grid; gap:18px; }
+.form { display:grid; gap:18px; width:100%; max-width:100%; }
+.form .form-group { min-width: 0; }
 .form-group label { font-weight:600; color:#374151; margin-bottom:6px; display:block; }
 .form-group input,
-.form-group textarea { width:100%; font-size:16px; padding:12px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; color:#111827; }
+.form-group textarea { width:100%; max-width:100%; font-size:16px; padding:12px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; color:#111827; box-sizing:border-box; display:block; resize: vertical; }
 .form-group input:focus,
 .form-group textarea:focus { outline:none; border-color:transparent; box-shadow:0 0 0 3px rgba(37,99,235,.4); }
 
 /* Buttons */
-.submit-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border:none; border-radius:10px; background:#1e3a8a; color:#fff; font-weight:700; cursor:pointer; justify-self:center; }
+.submit-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border:none; border-radius:10px; background:#1e3a8a; color:#fff; font-weight:700; cursor:pointer; justify-self:center; max-width:100%; }
 .submit-btn:hover { background:#1b2f73; }

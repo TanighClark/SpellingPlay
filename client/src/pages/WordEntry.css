@@ -27,7 +27,7 @@
 /* FEATURES */
 .features { background:#fff; }
 .features-grid { display:grid; gap:24px; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); }
-.card { background:#fff; border-radius:16px; padding:24px; text-align:center; box-shadow:0 8px 28px rgba(0,0,0,.08); }
+.card { background:#fff; border-radius:16px; padding:24px; text-align:center; box-shadow:0 8px 28px rgba(0,0,0,.08); overflow:hidden; }
 .icon-circle { width:64px; height:64px; border-radius:50%; background:#dbeafe; color:#1e3a8a; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; }
 .icon { width:28px; height:28px; }
 .icon-small { width:18px; height:18px; }
@@ -101,10 +101,10 @@
 .create-sub { max-width:680px; margin:8px auto 28px; opacity:.9; }
 .card-lead { color:#4b5563; text-align:center; margin-bottom:16px; }
 
-.form { display:grid; gap:18px; text-align:left; }
+.form { display:grid; gap:18px; text-align:left; width:100%; max-width:100%; }
 .form-group label { font-weight:600; color:#374151; margin-bottom:6px; display:block; }
 .form-group input,
-.form-group textarea { width:100%; font-size:16px; padding:12px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; color:#111827; }
+.form-group textarea { width:100%; max-width:100%; font-size:16px; padding:12px 14px; border:1px solid #d1d5db; border-radius:10px; background:#fff; color:#111827; box-sizing:border-box; display:block; }
 .form-group input:focus,
 .form-group textarea:focus { outline:none; border-color:transparent; box-shadow:0 0 0 3px rgba(37,99,235,.4); }
 
