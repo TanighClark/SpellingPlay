@@ -2,7 +2,7 @@
 .preview-page {
   max-width: 1500px;
   margin: 2rem auto;
-  padding: 0 2rem;
+  padding: 0 2rem 6rem; /* space for footer */
   font-family: system-ui, sans-serif;
   color: black;
   align-content: center;
