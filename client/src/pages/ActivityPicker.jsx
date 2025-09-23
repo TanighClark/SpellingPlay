@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import ActivityCard from '../components/ActivityCard';
+import Meta from '../components/Meta';
 import './styles/ActivityPicker.css';
 
 const activities = [
@@ -77,6 +78,10 @@ export default function ActivityPicker() {
 
   return (
     <main className="picker-container" aria-label="Activity Selection">
+      <Meta
+        title="Choose an Activity — Spell & Play"
+        description="Select from word search, fill-in-the-blank, scrambles, and more to turn your word list into printable practice."
+      />
       <h1 className="picker-title">Choose an Activity</h1>
       <section
         className="picker-grid"

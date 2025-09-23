@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Meta from '../components/Meta';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './styles/Preview.css';
 
@@ -104,6 +105,12 @@ export default function Preview() {
 
   return (
     <section className="preview-page" aria-labelledby="preview-title">
+      <Meta
+        title={`${title || 'Worksheet'} — Preview | Spell & Play`}
+        description={`Preview and download a printable ${
+          title || 'worksheet'
+        } for ${listName || 'your spelling list'} (${words.length} words).`}
+      />
       <h1 id="preview-title" className="preview-title">
         {title} is Ready!
       </h1>
@@ -132,7 +139,13 @@ export default function Preview() {
 
         <div className="preview-details">
           {(loading || !pdfUrl) && (
-            <div style={{ marginBottom: 8, fontSize: 12 }}>
+            <div
+              style={{
+                marginBottom: 8,
+                fontSize: 12,
+                color: !loading ? '#b91c1c' : undefined,
+              }}
+            >
               <span
                 style={{
                   display: 'inline-block',

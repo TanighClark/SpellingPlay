@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spelling-play.vercel.app/sitemap.xml

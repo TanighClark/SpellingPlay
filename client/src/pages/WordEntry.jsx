@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Meta from '../components/Meta';
 import { useNavigate } from 'react-router-dom';
 import './WordEntry.css'; // <-- scoped styles for this page only
 
@@ -33,6 +34,10 @@ export default function WordEntry() {
 
   return (
     <div className="landing">
+      <Meta
+        title="Spell & Play — Create Spelling Activities"
+        description="Paste a word list and generate fun, printable spelling activities in seconds. No logins or ads."
+      />
       {/* HERO */}
       <section className="hero">
         <div className="container">
@@ -66,7 +71,22 @@ export default function WordEntry() {
             <div className="hero-image">
               {/* Put your image at: client/public/images/hero.png */}
               <img
-                src="/images/hero.PNG"
+                src={
+                  'https://images.weserv.nl/?url=static.photos/education/640x360/97&w=960'
+                }
+                srcSet={
+                  `${'https://images.weserv.nl/?url=static.photos/education/640x360/97'}&w=640 640w, ` +
+                  `${'https://images.weserv.nl/?url=static.photos/education/640x360/97'}&w=960 960w, ` +
+                  `${'https://images.weserv.nl/?url=static.photos/education/640x360/97'}&w=1280 1280w, ` +
+                  `${'https://images.weserv.nl/?url=static.photos/education/640x360/97'}&w=1920 1920w`
+                }
+                sizes="(min-width: 900px) 50vw, 100vw"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `${
+                    import.meta.env.BASE_URL
+                  }images/hero.PNG`;
+                }}
                 alt="Parent helping child with spelling practice"
                 loading="lazy"
                 width="1200"

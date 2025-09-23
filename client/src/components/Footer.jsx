@@ -13,6 +13,14 @@ export default function Footer() {
         </div>
         <div className="footer-meta">
           <span>© {year} SpellPlay</span>
+          <span style={{ marginLeft: 12 }}>
+            <a
+              href="/privacy"
+              style={{ color: '#9ca3af', textDecoration: 'none' }}
+            >
+              Privacy
+            </a>
+          </span>
         </div>
       </div>
     </footer>
