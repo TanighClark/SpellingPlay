@@ -308,3 +308,16 @@ app.post('/api/generate-pdf', async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
+// Warm-up Puppeteer shortly after boot to avoid first-request cold start
+(async () => {
+  try {
+    const browser = await getBrowser();
+    const page = await (await browser).newPage();
+    await page.setContent('<html><body>ready</body></html>');
+    await page.close();
+    console.log('Puppeteer pre-warmed.');
+  } catch (e) {
+    console.warn('Puppeteer warm-up failed (will try on demand):', e.message);
+  }
+})();

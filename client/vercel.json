@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://spelling-app.fly.dev/api/$1" },
     { "source": "/((?!.*\\.).*)", "destination": "/" }
   ],
   "headers": [
