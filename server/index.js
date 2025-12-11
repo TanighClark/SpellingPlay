@@ -81,7 +81,7 @@ async function generateSentences(words) {
     {
       role: 'system',
       content:
-        'You are an assistant that returns a JSON array of fill-in-the-blank sentences.',
+        'You are an assistant that returns a JSON array of fill-in-the-blank sentences for kids grade 2 - 6.',
     },
     {
       role: 'user',
@@ -90,6 +90,13 @@ async function generateSentences(words) {
       Each element should be an object with:
       - "sentence": a sentence with the word replaced by "_____"
       - "answer": the original word
+      
+      Requirements for each sentence:
+      - Must be 7-10 words long
+      - Must be grammatically correct and make sense
+      - Should be substantial enough to fill across a page
+      - The blank should fit naturally in context
+      
       Only return the JSON array.`,
     },
   ];
